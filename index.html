@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>時価総額バトル</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ─── タイトル画面 ─────────────────────────────────────────────── -->
+  <div id="screen-title" class="screen active">
+    <div class="title-eyebrow">NIKKEI 225 CARD GAME</div>
+    <h1 class="game-title">時価総額バトル</h1>
+    <p class="game-subtitle">日経225企業のカードで対決する株式知識ゲーム</p>
+    <div class="title-features">
+      <span class="feature-chip">HAND × 7</span>
+      <span class="feature-chip">5 ROUNDS</span>
+      <span class="feature-chip">JUST KILL ×2</span>
+      <span class="feature-chip">EVENT</span>
+      <span class="feature-chip">METRIC</span>
+      <span class="feature-chip">M&amp;A</span>
+    </div>
+    <div class="title-buttons">
+      <button id="btn-start" class="btn-primary">ゲーム開始</button>
+      <button id="btn-rules" class="btn-secondary">ルール説明</button>
+    </div>
+  </div>
+
+  <!-- ─── ルール画面 ─────────────────────────────────────────────── -->
+  <div id="screen-rules" class="screen">
+    <h2>ルール</h2>
+
+    <div class="rule-item">
+      <div class="rule-num">1</div>
+      <div>日経225企業のカードが<strong>7枚</strong>配られます。各カードには会社名・業種・各種指標が記載されています。</div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-num">2</div>
+      <div>毎ラウンド開始時に<strong>マクロイベント</strong>が発生し、特定の業種の数値を補正します。</div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-num">3</div>
+      <div><strong>勝負指標</strong>（時価総額・売上高・営業利益・従業員数）を選んで対決します。相手の指標値は「目安のみ」表示されます。</div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-num">4</div>
+      <div>手札から<strong>1枚または2枚（M&A合体）</strong>を選んで対決。2枚の場合は指標値を合算します。</div>
+    </div>
+
+    <div class="scoring-grid">
+      <h3>ボーナス点（勝利時のみ）</h3>
+      <div class="score-row">
+        <span>基本勝利</span>
+        <span class="score-badge badge-green">+100点</span>
+      </div>
+      <div class="score-row">
+        <span>差が30%未満の勝利</span>
+        <span class="score-badge badge-blue">うまい！ +50点</span>
+      </div>
+      <div class="score-row">
+        <span>差が15%未満の勝利</span>
+        <span class="score-badge badge-blue">絶妙！ +100点</span>
+      </div>
+      <div class="score-row">
+        <span>差が5%未満の勝利</span>
+        <span class="score-badge badge-gold">神業！ +200点</span>
+      </div>
+      <div class="score-row">
+        <span>差が10%未満の勝利（重複適用）</span>
+        <span class="score-badge badge-purple">⚡ ジャスト・キル！ ×2</span>
+      </div>
+    </div>
+
+    <button id="btn-rules-back" class="btn-secondary" style="align-self:flex-start">← 戻る</button>
+  </div>
+
+  <!-- ─── ゲーム画面 ─────────────────────────────────────────────── -->
+  <div id="screen-game" class="screen">
+
+    <!-- ヘッダー -->
+    <header class="game-header">
+      <div class="round-indicator" id="round-num">ROUND 1 / 5</div>
+      <div class="score-display">
+        <span class="label">SCORE</span>
+        <span class="value" id="score-val">0</span>
+      </div>
+    </header>
+
+    <!-- イベントバナー -->
+    <div id="event-banner" class="event-banner hidden">
+      <div class="event-header">
+        <span class="event-badge">📰 イベント</span>
+        <strong id="event-name">-</strong>
+      </div>
+      <div id="event-desc" class="event-desc">-</div>
+      <div id="event-effects" class="event-effects"></div>
+      <div id="event-metric-note" class="event-metric-note">※ 売上高・営業利益に適用</div>
+    </div>
+
+    <!-- 対決エリア -->
+    <div class="battle-zone">
+      <div class="battle-slot">
+        <div class="slot-label">相手のカード</div>
+        <div id="opp-slot"></div>
+      </div>
+
+      <div class="vs-center">VS</div>
+
+      <div class="battle-slot">
+        <div class="slot-label">あなたのカード</div>
+        <div id="player-slot">
+          <div class="slot-placeholder">カードを選んでください</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 手札エリア -->
+    <footer class="game-footer">
+      <!-- 指標セレクタ -->
+      <div class="metric-selector">
+        <span class="metric-title">勝負指標：</span>
+        <div class="metric-btns">
+          <button class="metric-btn active" data-metric="marketCap">時価総額</button>
+          <button class="metric-btn" data-metric="revenue">売上高</button>
+          <button class="metric-btn" data-metric="operatingProfit">営業利益</button>
+          <button class="metric-btn" data-metric="employees">従業員数</button>
+        </div>
+      </div>
+
+      <div class="hand-header">
+        <span class="hand-title">手札 <span id="hand-count">7枚</span></span>
+        <span id="mna-hint" class="mna-hint">2枚選ぶとM&A！</span>
+        <span id="instruction">手札からカードを選んでください</span>
+      </div>
+      <div class="hand-cards" id="hand-cards"></div>
+      <div class="battle-btn-wrap">
+        <button id="btn-battle" disabled>対決！</button>
+      </div>
+    </footer>
+
+    <!-- 結果オーバーレイ -->
+    <div id="result-overlay" class="hidden">
+      <div class="result-inner">
+        <div id="result-banner" class="result-banner">-</div>
+
+        <div class="result-pts">
+          <div id="result-base" class="result-base">+0点</div>
+          <div id="result-bonus" class="result-bonus"></div>
+          <div id="result-justkill" class="result-justkill"></div>
+          <div id="result-total" class="result-total">合計 +0点</div>
+          <div id="result-event" class="result-event"></div>
+        </div>
+
+        <!-- 企業情報パネル -->
+        <div class="edu-panel">
+          <h3>企業情報</h3>
+          <div class="edu-cards">
+            <div class="edu-card" id="edu-player">
+              <div class="edu-name">-</div>
+              <div class="edu-sector">-</div>
+              <div class="edu-cap">-</div>
+              <div class="edu-metric" style="display:none">-</div>
+              <div class="edu-rank">-</div>
+              <div class="edu-meta">設立：<span class="edu-founded">-</span>　本社：<span class="edu-hq">-</span></div>
+              <div class="edu-desc">-</div>
+              <div class="edu-fact">-</div>
+            </div>
+            <div class="edu-card" id="edu-opponent">
+              <div class="edu-name">-</div>
+              <div class="edu-sector">-</div>
+              <div class="edu-cap">-</div>
+              <div class="edu-metric" style="display:none">-</div>
+              <div class="edu-rank">-</div>
+              <div class="edu-meta">設立：<span class="edu-founded">-</span>　本社：<span class="edu-hq">-</span></div>
+              <div class="edu-desc">-</div>
+              <div class="edu-fact">-</div>
+            </div>
+          </div>
+        </div>
+
+        <button id="btn-next" class="btn-primary">次のラウンドへ</button>
+      </div>
+    </div>
+
+  </div><!-- /screen-game -->
+
+  <!-- ─── ゲームオーバー画面 ───────────────────────────────────── -->
+  <div id="screen-gameover" class="screen">
+    <div class="gameover-inner">
+      <h2 class="gameover-title">ゲーム終了！</h2>
+
+      <div class="final-score-box">
+        <div class="final-score-num" id="final-score">0</div>
+        <div class="final-score-label">FINAL SCORE</div>
+        <div class="rank-label" id="rank-label">-</div>
+        <div class="rank-stars" id="rank-stars">☆☆☆☆☆</div>
+      </div>
+
+      <div class="history-list" id="history-list"></div>
+
+      <div class="gameover-btns">
+        <button id="btn-retry" class="btn-primary">もう一度プレイ</button>
+        <button id="btn-title" class="btn-secondary">タイトルへ</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<script src="js/data.js"></script>
+<script src="js/game.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,809 @@
+/* ─── リセット・変数 ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #F5F2EE;
+  --surface:  #FFFFFF;
+  --surface2: #EDEAE6;
+  --border:   #D4D0CB;
+  --text:     #111827;
+  --text2:    #7A7673;
+  --accent:   #E8002D;
+  --win:      #00703C;
+  --lose:     #E8002D;
+  --gold:     #C69214;
+  --dark:     #111827;
+  --radius:   6px;
+  --card-w:   200px;
+  --card-h:   280px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ─── 画面管理 ───────────────────────────────────────────────────── */
+#app { width: 100%; max-width: 900px; min-height: 100vh; position: relative; }
+
+.screen { display: none; padding: 24px 16px; }
+.screen.active { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ─── タイトル画面 ───────────────────────────────────────────────── */
+#screen-title {
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  background: var(--dark);
+  padding: 40px 20px;
+}
+
+.title-eyebrow {
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .28em;
+  color: var(--accent);
+  font-family: 'Courier New', monospace;
+  text-align: center;
+}
+
+.game-title {
+  font-size: clamp(2.2rem, 7vw, 4rem);
+  font-weight: 900;
+  letter-spacing: -.01em;
+  color: #FFFFFF;
+  text-align: center;
+  line-height: 1;
+  position: relative;
+  padding-bottom: 20px;
+}
+
+.game-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 56px;
+  height: 4px;
+  background: var(--accent);
+}
+
+.game-subtitle {
+  color: #9CA3AF;
+  font-size: .95rem;
+  text-align: center;
+}
+
+.title-features {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 500px;
+}
+
+.feature-chip {
+  background: transparent;
+  border: 1px solid #374151;
+  border-radius: 3px;
+  padding: 5px 12px;
+  font-size: .78rem;
+  color: #9CA3AF;
+  font-family: 'Courier New', monospace;
+  letter-spacing: .04em;
+}
+
+.title-buttons { display: flex; flex-direction: column; gap: 10px; width: 220px; }
+
+/* ─── ルール画面 ─────────────────────────────────────────────────── */
+#screen-rules { gap: 20px; max-width: 600px; margin: 0 auto; background: var(--bg); }
+#screen-rules h2 {
+  font-size: 1.4rem;
+  border-bottom: 3px solid var(--accent);
+  padding-bottom: 10px;
+  display: inline-block;
+}
+
+.rule-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+}
+
+.rule-num {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  width: 26px; height: 26px;
+  border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: .85rem;
+}
+
+.scoring-grid {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: grid;
+  gap: 10px;
+}
+
+.scoring-grid h3 { font-size: .85rem; color: var(--text2); margin-bottom: 4px; }
+
+.score-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: .88rem;
+  gap: 8px;
+}
+
+.score-badge {
+  padding: 3px 10px;
+  border-radius: 3px;
+  font-weight: 700;
+  font-size: .78rem;
+  white-space: nowrap;
+}
+.badge-gold   { background: #FEF3C7; color: #92600A; border: 1px solid #F0C97A; }
+.badge-blue   { background: #EEF2FF; color: #1D4ED8; border: 1px solid #BDD0FF; }
+.badge-green  { background: #ECFDF5; color: #00703C; border: 1px solid #99D8B8; }
+.badge-purple { background: #FDF4FF; color: #7E22CE; border: 1px solid #D8B4FE; }
+
+/* ─── ゲーム画面 ─────────────────────────────────────────────────── */
+#screen-game {
+  padding: 0;
+  gap: 0;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* ─── イベントバナー ─────────────────────────────────────────────── */
+.event-banner {
+  background: #FFFBF0;
+  border-bottom: 1px solid var(--border);
+  border-left: 4px solid var(--gold);
+  padding: 8px 20px;
+  flex-shrink: 0;
+  animation: slideDown .25s ease;
+}
+.event-banner.hidden   { display: none; }
+.event-banner.no-event { border-left-color: var(--border); background: var(--surface2); }
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+.event-header { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
+.event-badge {
+  font-size: .65rem;
+  background: var(--gold);
+  color: #fff;
+  border-radius: 2px;
+  padding: 1px 7px;
+  font-weight: 700;
+  white-space: nowrap;
+  letter-spacing: .04em;
+}
+.event-header strong { font-size: .9rem; color: #7A5800; font-weight: 800; }
+.event-desc  { font-size: .75rem; color: var(--text2); margin-bottom: 5px; }
+.event-effects { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.event-effect-chip {
+  font-size: .68rem;
+  padding: 1px 8px;
+  border-radius: 2px;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+}
+.event-effect-chip.positive { background: #ECFDF5; color: var(--win);  border: 1px solid #99D8B8; }
+.event-effect-chip.negative { background: #FEF2F2; color: var(--lose); border: 1px solid #FCA5A5; }
+
+.event-metric-note {
+  font-size: .62rem;
+  color: var(--text2);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* ─── 指標セレクタ ───────────────────────────────────────────────── */
+.metric-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+.metric-title { font-size: .72rem; color: var(--text2); white-space: nowrap; flex-shrink: 0; }
+.metric-btns  { display: flex; gap: 4px; flex-wrap: wrap; }
+
+.metric-btn {
+  padding: 3px 11px;
+  font-size: .75rem;
+  font-weight: 600;
+  border-radius: 2px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text2);
+  cursor: pointer;
+  transition: all .12s;
+  letter-spacing: .02em;
+}
+.metric-btn:hover  { border-color: var(--accent); color: var(--text); }
+.metric-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ゲームヘッダー */
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background: var(--dark);
+  border-bottom: none;
+  flex-shrink: 0;
+}
+
+.round-indicator { font-weight: 800; color: var(--accent); font-size: 1rem; letter-spacing: .12em; font-family: 'Courier New', monospace; }
+
+.score-display { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
+.score-display .label { font-size: .65rem; color: #6B7280; letter-spacing: .12em; }
+.score-display .value { font-size: 1.4rem; font-weight: 900; color: #FFFFFF; font-family: 'Courier New', monospace; }
+
+/* 対決エリア */
+.battle-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 24px 20px;
+  flex: 1;
+  background: var(--bg);
+}
+
+.battle-slot { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.slot-label { font-size: .68rem; color: var(--text2); text-transform: uppercase; letter-spacing: .14em; font-weight: 700; }
+
+/* バトルカード */
+.battle-card {
+  width: var(--card-w);
+  height: var(--card-h);
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .2s, box-shadow .2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,.07);
+}
+
+.battle-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--sector-color, var(--accent));
+}
+
+.bc-sector {
+  font-size: .68rem;
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-weight: 700;
+  align-self: flex-start;
+  letter-spacing: .03em;
+}
+
+.bc-name {
+  font-size: .9rem;
+  font-weight: 700;
+  line-height: 1.4;
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  color: var(--text);
+}
+
+.bc-ticker { font-size: .68rem; color: var(--text2); font-family: 'Courier New', monospace; }
+
+.bc-cap-area, .bc-hint-area {
+  margin-top: auto;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 9px 12px;
+  text-align: center;
+}
+
+.bc-cap-label, .bc-hint-label {
+  font-size: .65rem;
+  color: var(--text2);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.bc-cap-value {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: var(--gold);
+  font-family: 'Courier New', monospace;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.bc-cap-value.evt-up   { color: var(--win); }
+.bc-cap-value.evt-down { color: var(--lose); }
+
+.bc-original-val {
+  font-size: .65rem;
+  color: var(--text2);
+  text-decoration: line-through;
+  font-family: 'Courier New', monospace;
+  margin-top: 2px;
+}
+
+/* バトルカードの補正バッジ */
+.bc-boost-badge {
+  font-size: .58rem;
+  font-weight: 900;
+  padding: 1px 5px;
+  border-radius: 2px;
+  font-family: 'Courier New', monospace;
+  flex-shrink: 0;
+}
+.bc-boost-badge.up   { background: #DCFCE7; color: var(--win); }
+.bc-boost-badge.down { background: #FEE2E2; color: var(--lose); }
+
+.bc-hint-value {
+  font-size: .95rem;
+  font-weight: 800;
+  color: var(--text);
+  font-family: 'Courier New', monospace;
+}
+
+/* 相手カードのイベント補正ノート */
+.bc-hint-boost {
+  font-size: .62rem;
+  font-weight: 700;
+  margin-top: 4px;
+  font-family: 'Courier New', monospace;
+}
+.bc-hint-boost.up   { color: var(--win); }
+.bc-hint-boost.down { color: var(--lose); }
+
+.win-card  { border-color: var(--win);  box-shadow: 0 0 0 2px var(--win),  0 4px 16px rgba(0,112,60,.15); }
+.lose-card { border-color: var(--lose); box-shadow: 0 0 0 2px var(--lose), 0 4px 16px rgba(232,0,45,.12); }
+
+.slot-placeholder {
+  width: var(--card-w);
+  height: var(--card-h);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text2);
+  font-size: .82rem;
+  text-align: center;
+  padding: 16px;
+}
+
+.vs-center {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--accent);
+  flex-shrink: 0;
+  letter-spacing: .1em;
+  font-family: 'Courier New', monospace;
+}
+
+/* 手札エリア */
+.game-footer {
+  background: var(--surface2);
+  border-top: 2px solid var(--border);
+  padding: 14px 20px;
+  flex-shrink: 0;
+}
+
+.hand-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.hand-title { font-size: .75rem; color: var(--text2); letter-spacing: .1em; font-weight: 700; text-transform: uppercase; }
+
+#instruction { font-size: .78rem; color: var(--accent); font-weight: 600; }
+
+.hand-cards { display: flex; gap: 10px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
+
+/* 手札カード */
+.hand-card {
+  flex-shrink: 0;
+  width: 130px;
+  height: 175px;
+  border-radius: 5px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  padding: 10px 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  transition: transform .12s, border-color .12s, box-shadow .12s;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+
+.hand-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--sector-color, var(--accent));
+}
+
+.hand-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--accent);
+  box-shadow: 0 6px 18px rgba(232,0,45,.15);
+}
+
+.hand-card.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent), 0 6px 18px rgba(232,0,45,.18);
+  transform: translateY(-4px);
+}
+
+.hand-card.mna-selected {
+  border-color: var(--dark);
+  box-shadow: 0 0 0 2px var(--dark), 0 6px 18px rgba(0,0,0,.15);
+  transform: translateY(-4px);
+}
+
+.hc-sector       { font-size: .62rem; font-weight: 700; }
+.hc-name         { font-size: .76rem; font-weight: 700; line-height: 1.35; flex: 1; color: var(--text); }
+.hc-metric-row   { display: flex; align-items: center; gap: 3px; }
+.hc-metric-val   { font-size: .9rem; font-weight: 900; color: var(--gold); font-family: 'Courier New', monospace; }
+.hc-metric-val.evt-up   { color: var(--win); }
+.hc-metric-val.evt-down { color: var(--lose); }
+.hc-original-val { font-size: .6rem; color: var(--text2); text-decoration: line-through; font-family: 'Courier New', monospace; line-height: 1.1; }
+.hc-metric-label { font-size: .58rem; color: var(--text2); text-transform: uppercase; letter-spacing: .04em; }
+.hc-ticker       { font-size: .62rem; color: var(--text2); font-family: 'Courier New', monospace; }
+
+/* イベント補正バッジ（手札） */
+.hc-evt-badge {
+  font-size: .55rem;
+  font-weight: 900;
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-family: 'Courier New', monospace;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.hc-evt-badge.up   { background: #DCFCE7; color: var(--win); }
+.hc-evt-badge.down { background: #FEE2E2; color: var(--lose); }
+
+/* M&A手札バッジ */
+.hc-mna-badge {
+  position: absolute;
+  top: 4px; right: 5px;
+  font-size: .55rem;
+  font-weight: 900;
+  background: var(--dark);
+  color: #fff;
+  padding: 1px 5px;
+  border-radius: 2px;
+  letter-spacing: .04em;
+}
+
+/* M&Aヒント */
+.mna-hint {
+  font-size: .7rem;
+  color: var(--text2);
+  font-weight: 700;
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-family: 'Courier New', monospace;
+}
+
+/* 対決ボタン */
+.battle-btn-wrap { display: flex; justify-content: center; margin-top: 10px; }
+
+#btn-battle {
+  padding: 11px 40px;
+  font-size: 1rem;
+  font-weight: 800;
+  border-radius: 3px;
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  color: var(--text2);
+  cursor: not-allowed;
+  transition: all .15s;
+  letter-spacing: .14em;
+  font-family: 'Courier New', monospace;
+}
+
+#btn-battle.ready {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(232,0,45,.3);
+}
+
+#btn-battle.ready:hover {
+  background: #C40027;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(232,0,45,.4);
+}
+
+/* ─── M&Aプレイヤースロット ─────────────────────────────────────── */
+.mna-wrap {
+  position: relative;
+  width: calc(var(--card-w) + 30px);
+  height: var(--card-h);
+}
+.mna-card { position: absolute; width: var(--card-w); height: var(--card-h); }
+.mna-card-0 { left: 0;    top: 0;   z-index: 1; }
+.mna-card-1 { left: 30px; top: 10px; z-index: 2; opacity: .92; }
+
+.mna-center-badge {
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--dark);
+  color: #fff;
+  font-weight: 900;
+  font-size: .72rem;
+  padding: 3px 14px;
+  border-radius: 2px;
+  z-index: 3;
+  white-space: nowrap;
+  letter-spacing: .1em;
+  font-family: 'Courier New', monospace;
+}
+
+/* ─── 結果オーバーレイ ─────────────────────────────────────────────── */
+#result-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(245,242,238,.97);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 20px 16px;
+  z-index: 10;
+  animation: fadeIn .2s ease;
+}
+
+#result-overlay.hidden { display: none; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.result-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  max-width: 700px;
+}
+
+.result-banner {
+  font-size: 2.8rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+  animation: popIn .3s cubic-bezier(0.34,1.56,0.64,1);
+  font-family: 'Courier New', monospace;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.6); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.result-banner.win  { color: var(--win); }
+.result-banner.lose { color: var(--lose); }
+
+.result-pts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 32px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.result-base     { font-size: 1rem; color: var(--text2); }
+.result-bonus    { font-size: 1rem; color: var(--gold); font-weight: 800; display: none; }
+.result-bonus.show    { display: block; animation: popIn .3s .1s both cubic-bezier(0.34,1.56,0.64,1); }
+.result-justkill { font-size: 1rem; font-weight: 900; color: var(--accent); display: none; font-family: 'Courier New', monospace; letter-spacing: .04em; }
+.result-justkill.show { display: block; animation: popIn .3s .2s both cubic-bezier(0.34,1.56,0.64,1); }
+.result-total    { font-size: 1.5rem; font-weight: 900; color: var(--text); border-top: 1px solid var(--border); padding-top: 8px; margin-top: 4px; width: 100%; text-align: center; font-family: 'Courier New', monospace; }
+.result-event    { font-size: .72rem; color: var(--text2); background: var(--surface2); padding: 2px 10px; border-radius: 2px; border: 1px solid var(--border); font-family: 'Courier New', monospace; }
+
+/* 企業情報 */
+.edu-panel { width: 100%; }
+.edu-panel h3 { font-size: .72rem; color: var(--text2); letter-spacing: .14em; text-transform: uppercase; margin-bottom: 8px; font-weight: 800; }
+
+.edu-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.edu-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border: 1px solid var(--border);
+  border-top: 3px solid transparent;
+}
+
+#edu-player  { border-top-color: var(--accent); }
+#edu-opponent { border-top-color: var(--text2); }
+
+.edu-name    { font-size: .9rem; font-weight: 800; color: var(--text); }
+.edu-sector  { font-size: .75rem; font-weight: 700; }
+.edu-cap     { font-size: 1rem; font-weight: 900; color: var(--gold); font-family: 'Courier New', monospace; }
+.edu-metric  { font-size: .78rem; font-weight: 700; color: var(--accent); font-family: 'Courier New', monospace; }
+.edu-rank    { font-size: .68rem; color: var(--text2); }
+.edu-meta    { font-size: .7rem; color: var(--text2); }
+.edu-desc    { font-size: .77rem; line-height: 1.5; border-top: 1px solid var(--border); padding-top: 5px; margin-top: 2px; }
+.edu-fact    { font-size: .75rem; color: var(--win); line-height: 1.5; font-weight: 600; }
+
+/* ─── ゲームオーバー画面 ─────────────────────────────────────────── */
+#screen-gameover { align-items: center; justify-content: center; gap: 24px; background: var(--bg); }
+
+.gameover-inner { display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%; max-width: 640px; }
+
+.gameover-title {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -.01em;
+}
+
+.final-score-box {
+  text-align: center;
+  background: var(--dark);
+  border-radius: var(--radius);
+  padding: 24px 48px;
+  color: #fff;
+  width: 100%;
+  max-width: 340px;
+}
+
+.final-score-num { font-size: 4rem; font-weight: 900; color: #FFFFFF; line-height: 1; font-family: 'Courier New', monospace; }
+.final-score-label { font-size: .68rem; color: #6B7280; margin-top: 4px; letter-spacing: .14em; text-transform: uppercase; }
+.rank-label { font-size: 1.1rem; font-weight: 800; margin-top: 12px; color: var(--accent); }
+.rank-stars { font-size: 1.3rem; color: var(--gold); letter-spacing: .08em; margin-top: 4px; }
+
+.history-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.history-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: var(--surface);
+  border-radius: 4px;
+  padding: 9px 13px;
+  font-size: .8rem;
+  border-left: 3px solid var(--border);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border);
+}
+
+.history-item.h-win  { border-left-color: var(--win); }
+.history-item.h-lose { border-left-color: var(--lose); }
+
+.h-round  { font-weight: 800; width: 26px; flex-shrink: 0; font-family: 'Courier New', monospace; font-size: .75rem; }
+.h-result { font-weight: 900; width: 18px; flex-shrink: 0; font-size: .85rem; }
+.h-win  .h-result { color: var(--win); }
+.h-lose .h-result { color: var(--lose); }
+.h-detail { flex: 1; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: .76rem; }
+.h-pts { font-weight: 800; color: var(--text); white-space: nowrap; flex-shrink: 0; font-family: 'Courier New', monospace; font-size: .78rem; }
+
+.gameover-btns { display: flex; gap: 10px; }
+
+/* ─── 汎用ボタン ─────────────────────────────────────────────────── */
+.btn-primary {
+  padding: 12px 32px;
+  font-size: .95rem;
+  font-weight: 800;
+  border-radius: 3px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  transition: background .12s, transform .12s, box-shadow .12s;
+  letter-spacing: .06em;
+}
+
+.btn-primary:hover {
+  background: #C40027;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(232,0,45,.3);
+}
+
+.btn-secondary {
+  padding: 10px 24px;
+  font-size: .88rem;
+  font-weight: 700;
+  border-radius: 3px;
+  border: 2px solid var(--border);
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  transition: border-color .12s, color .12s;
+  letter-spacing: .04em;
+}
+
+.btn-secondary:hover { border-color: var(--dark); color: var(--text); }
+
+/* ─── レスポンシブ ───────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  :root { --card-w: 150px; --card-h: 210px; }
+
+  .battle-zone { gap: 10px; padding: 16px 10px; }
+  .vs-center   { font-size: 1.2rem; }
+
+  .bc-name      { font-size: .8rem; }
+  .bc-cap-value { font-size: 1rem; }
+
+  .hand-card { width: 110px; height: 165px; }
+  .hc-name   { font-size: .7rem; }
+  .hc-metric-val { font-size: .82rem; }
+
+  .metric-selector { gap: 6px; margin-bottom: 6px; }
+  .metric-btn { padding: 2px 8px; font-size: .68rem; }
+
+  .event-banner { padding: 6px 12px; }
+
+  .edu-cards  { grid-template-columns: 1fr; }
+  .result-banner { font-size: 2rem; }
+  .mna-wrap { width: calc(var(--card-w) + 20px); }
+  .mna-card-1 { left: 20px; }
+  .result-pts { padding: 12px 20px; }
+  .final-score-box { padding: 18px 28px; }
+}

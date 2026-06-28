@@ -309,15 +309,8 @@ function showResult(result) {
     bonusEl.className = 'result-bonus';
   }
 
-  // ジャスト・キル
-  const jkEl = document.getElementById('result-justkill');
-  if (result.justKill) {
-    jkEl.textContent = '⚡ ジャスト・キル！ 全ポイント×2';
-    jkEl.className = 'result-justkill show';
-  } else {
-    jkEl.textContent = '';
-    jkEl.className = 'result-justkill';
-  }
+  // ジャスト・キル演出はボーナス行に統合済みのため、専用行は非表示にする
+  document.getElementById('result-justkill').className = 'result-justkill';
 
   document.getElementById('result-total').textContent = `合計 +${result.totalPoints}点`;
 
@@ -398,9 +391,7 @@ function showGameOver() {
     const playerName = r.isMnA
       ? `${r.playerCards[0].name}＋${r.playerCards[1].name}`
       : r.playerCards[0].name;
-    let bonusTxt = '';
-    if (r.justKill) bonusTxt = ' ⚡×2';
-    else if (r.bonus) bonusTxt = ` ${r.bonus.label}`;
+    const bonusTxt = r.bonus ? ` ${r.justKill ? '⚡' : ''}${r.bonus.label}` : '';
     li.innerHTML = `
       <span class="h-round">R${r.round}</span>
       <span class="h-result">${r.playerWins ? '勝' : '負'}</span>

@@ -90,27 +90,22 @@ class GameEngine {
       : 1;
 
     let basePoints = 0;
-    let bonus = null;   // 効率ボーナス（最高1件）
+    let bonus = null;   // 効率ボーナス（最高1件、基本点の50%まで）
     let justKill = false;
 
     if (playerWins) {
       basePoints = 100;
 
-      // 効率ボーナス（ギリギリ勝ちほど高得点）
+      // 効率ボーナス（ギリギリ勝ちほど高得点。2段階のみ、最大+50点）
       if (margin < 0.05) {
-        bonus = { label: '神業！', extra: 200 };
+        bonus = { label: 'ジャスト・キル！', extra: 50 };
+        justKill = true;
       } else if (margin < 0.15) {
-        bonus = { label: '絶妙！', extra: 100 };
-      } else if (margin < 0.30) {
-        bonus = { label: 'うまい！', extra: 50 };
+        bonus = { label: '絶妙！', extra: 30 };
       }
-
-      // ジャスト・キル：10%以内の勝利で全ポイント×2
-      if (margin < 0.10) justKill = true;
     }
 
-    let totalPoints = basePoints + (bonus ? bonus.extra : 0);
-    if (justKill) totalPoints *= 2;
+    const totalPoints = basePoints + (bonus ? bonus.extra : 0);
 
     this.score += totalPoints;
 
@@ -147,11 +142,12 @@ class GameEngine {
   }
 
   getScoreRank() {
-    if (this.score >= 2500) return { label: '株の神様',      stars: 5 };
-    if (this.score >= 1800) return { label: '敏腕トレーダー', stars: 4 };
-    if (this.score >= 1200) return { label: '投資家見習い',   stars: 3 };
-    if (this.score >= 600)  return { label: '株式初心者',     stars: 2 };
-    return                         { label: 'もっと勉強が必要', stars: 1 };
+    // 5ラウンド全勝（ボーナスなし）=500点を基準ライン（投資家見習い）に設定
+    if (this.score >= 700) return { label: '株の神様',      stars: 5 };
+    if (this.score >= 600) return { label: '敏腕トレーダー', stars: 4 };
+    if (this.score >= 500) return { label: '投資家見習い',   stars: 3 };
+    if (this.score >= 350) return { label: '株式初心者',     stars: 2 };
+    return                        { label: 'もっと勉強が必要', stars: 1 };
   }
 }
 

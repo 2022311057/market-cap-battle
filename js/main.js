@@ -53,14 +53,15 @@ function makeOpponentCardFace(stock) {
   const metric = engine ? engine.currentMetric : 'marketCap';
   const event  = engine ? engine.currentEvent : null;
   const boost  = getBoostInfo(stock, metric, event);
-  const hintVal = boost ? boost.eff : (stock[metric] || 0);
+  // 相手カードの「目安」は補正前の実力値で判定する（補正後の値・割合は対決まで非公開）
+  const hintVal = stock[metric] || 0;
 
   const div = document.createElement('div');
   div.className = 'battle-card opponent-face';
   div.style.setProperty('--sector-color', color);
 
   const boostNote = boost
-    ? `<div class="bc-hint-boost ${boost.isUp ? 'up' : 'down'}">${boost.isUp ? '↑' : '↓'} イベント補正 ${boost.isUp ? '+' : ''}${boost.pct}%</div>`
+    ? `<div class="bc-hint-boost ${boost.isUp ? 'up' : 'down'}">${boost.isUp ? '↑' : '↓'} イベント補正あり</div>`
     : '';
 
   div.innerHTML = `
@@ -348,7 +349,7 @@ function fillEduCard(id, stock, metric, extraCard) {
     metricEl.style.display = 'none';
   }
 
-  el.querySelector('.edu-rank').textContent = `日経225内 第${stock.rank}位 / ${stock.totalCount}社`;
+  el.querySelector('.edu-rank').textContent = `収録銘柄内 第${stock.rank}位 / ${stock.totalCount}社`;
   el.querySelector('.edu-founded').textContent = `${stock.founded}年`;
   el.querySelector('.edu-hq').textContent = stock.hq;
   el.querySelector('.edu-desc').textContent = stock.desc;

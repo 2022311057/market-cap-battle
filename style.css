@@ -566,12 +566,12 @@ body {
 /* ─── M&Aプレイヤースロット ─────────────────────────────────────── */
 .mna-wrap {
   position: relative;
-  width: calc(var(--card-w) + 30px);
-  height: var(--card-h);
+  width: calc(var(--card-w) * 2 - 40px);
+  height: calc(var(--card-h) + 14px);
 }
 .mna-card { position: absolute; width: var(--card-w); height: var(--card-h); }
-.mna-card-0 { left: 0;    top: 0;   z-index: 1; }
-.mna-card-1 { left: 30px; top: 10px; z-index: 2; opacity: .92; }
+.mna-card-0 { left: 0; top: 14px; z-index: 1; }
+.mna-card-1 { left: calc(var(--card-w) - 40px); top: 0; z-index: 2; box-shadow: -4px 0 12px rgba(0,0,0,.12); }
 
 .mna-center-badge {
   position: absolute;
@@ -594,7 +594,7 @@ body {
 #result-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(245,242,238,.97);
+  background: var(--bg);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -802,8 +802,8 @@ body {
 
   .edu-cards  { grid-template-columns: 1fr; }
   .result-banner { font-size: 2rem; }
-  .mna-wrap { width: calc(var(--card-w) + 20px); }
-  .mna-card-1 { left: 20px; }
+  .mna-wrap { width: calc(var(--card-w) * 2 - 30px); }
+  .mna-card-1 { left: calc(var(--card-w) - 30px); }
   .result-pts { padding: 12px 20px; }
   .final-score-box { padding: 18px 28px; }
 }

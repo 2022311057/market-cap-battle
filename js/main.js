@@ -14,7 +14,15 @@ function getBoostInfo(stock, metric, event) {
   const eff = engine.getEffectiveValue(stock, metric, event);
   if (eff === raw || raw === 0) return null;
   const pct = Math.round((eff / raw - 1) * 100);
-  return { raw, eff, pct, isUp: pct > 0 };
+  const abs = Math.abs(pct);
+  // 補正の強さを3段階に分け、矢印の数・太さで「どれだけ乗っているか」を視覚化する
+  const mag = abs >= 20 ? 3 : abs >= 10 ? 2 : 1;
+  return { raw, eff, pct, isUp: pct > 0, mag };
+}
+
+function boostArrow(boost) {
+  const arrow = boost.isUp ? '▲' : '▼';
+  return arrow.repeat(boost.mag);
 }
 
 // ─── カード生成ヘルパー ─────────────────────────────────────────────────
@@ -30,7 +38,7 @@ function makeBattleCard(stock, showBoost) {
   div.style.setProperty('--sector-color', color);
 
   const boostBadge = boost
-    ? `<span class="bc-boost-badge ${boost.isUp ? 'up' : 'down'}">${boost.isUp ? '+' : ''}${boost.pct}%</span>`
+    ? `<span class="bc-boost-badge ${boost.isUp ? 'up' : 'down'} mag-${boost.mag}">${boostArrow(boost)} ${boost.isUp ? '+' : ''}${boost.pct}%</span>`
     : '';
 
   div.innerHTML = `
@@ -97,7 +105,7 @@ function makeHandCard(stock, index) {
   div.dataset.index = index;
 
   const boostBadge = boost
-    ? `<span class="hc-evt-badge ${boost.isUp ? 'up' : 'down'}">${boost.isUp ? '▲+' : '▼'}${boost.pct}%</span>`
+    ? `<span class="hc-evt-badge ${boost.isUp ? 'up' : 'down'} mag-${boost.mag}">${boostArrow(boost)} ${boost.isUp ? '+' : ''}${boost.pct}%</span>`
     : '';
   const originalVal = boost
     ? `<div class="hc-original-val">${formatMetricValue(boost.raw, metric)}</div>`

@@ -376,6 +376,10 @@ body {
 .bc-boost-badge.up   { background: #DCFCE7; color: var(--win); }
 .bc-boost-badge.down { background: #FEE2E2; color: var(--lose); }
 
+.bc-boost-badge.mag-1 { font-size: .7rem; }
+.bc-boost-badge.mag-2 { font-size: .82rem; padding: 2px 7px; }
+.bc-boost-badge.mag-3 { font-size: .95rem; padding: 3px 8px; }
+
 .bc-hint-value {
   font-size: .95rem;
   font-weight: 800;
@@ -508,6 +512,11 @@ body {
 }
 .hc-evt-badge.up   { background: #DCFCE7; color: var(--win); }
 .hc-evt-badge.down { background: #FEE2E2; color: var(--lose); }
+
+/* 補正の強さに応じてバッジの大きさを変える（▲の数が多いほど強い） */
+.hc-evt-badge.mag-1 { font-size: .72rem; }
+.hc-evt-badge.mag-2 { font-size: .82rem; padding: 2px 7px; }
+.hc-evt-badge.mag-3 { font-size: .92rem; padding: 3px 8px; }
 
 /* イベント補正が乗っている手札カード自体も枠・背景で強調 */
 .hand-card.evt-boosted-up {

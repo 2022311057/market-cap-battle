@@ -497,16 +497,29 @@ body {
 
 /* イベント補正バッジ（手札） */
 .hc-evt-badge {
-  font-size: .55rem;
+  font-size: .72rem;
   font-weight: 900;
-  padding: 1px 4px;
-  border-radius: 2px;
+  padding: 2px 6px;
+  border-radius: 3px;
   font-family: 'Courier New', monospace;
   white-space: nowrap;
   flex-shrink: 0;
+  border: 1px solid currentColor;
 }
 .hc-evt-badge.up   { background: #DCFCE7; color: var(--win); }
 .hc-evt-badge.down { background: #FEE2E2; color: var(--lose); }
+
+/* イベント補正が乗っている手札カード自体も枠・背景で強調 */
+.hand-card.evt-boosted-up {
+  border-color: var(--win);
+  background: #F2FBF6;
+  box-shadow: 0 0 0 1px var(--win), 0 1px 4px rgba(0,0,0,.06);
+}
+.hand-card.evt-boosted-down {
+  border-color: var(--lose);
+  background: #FDF3F3;
+  box-shadow: 0 0 0 1px var(--lose), 0 1px 4px rgba(0,0,0,.06);
+}
 
 /* M&A手札バッジ */
 .hc-mna-badge {

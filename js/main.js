@@ -91,12 +91,13 @@ function makeHandCard(stock, index) {
   let cls = 'hand-card';
   if (isFirst)  cls += ' selected';
   if (isSecond) cls += ' mna-selected';
+  if (boost)    cls += boost.isUp ? ' evt-boosted-up' : ' evt-boosted-down';
   div.className = cls;
   div.style.setProperty('--sector-color', color);
   div.dataset.index = index;
 
   const boostBadge = boost
-    ? `<span class="hc-evt-badge ${boost.isUp ? 'up' : 'down'}">${boost.isUp ? '+' : ''}${boost.pct}%</span>`
+    ? `<span class="hc-evt-badge ${boost.isUp ? 'up' : 'down'}">${boost.isUp ? '▲+' : '▼'}${boost.pct}%</span>`
     : '';
   const originalVal = boost
     ? `<div class="hc-original-val">${formatMetricValue(boost.raw, metric)}</div>`

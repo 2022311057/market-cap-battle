@@ -65,11 +65,14 @@ function makeOpponentCardFace(stock) {
   const hintVal = stock[metric] || 0;
 
   const div = document.createElement('div');
-  div.className = 'battle-card opponent-face';
+  let cls = 'battle-card opponent-face';
+  if (boost) cls += boost.isUp ? ' evt-boosted-up' : ' evt-boosted-down';
+  div.className = cls;
   div.style.setProperty('--sector-color', color);
 
+  // 正確な数値・%は対決まで非公開。強さ（矢印の数）と方向だけを見せる
   const boostNote = boost
-    ? `<div class="bc-hint-boost ${boost.isUp ? 'up' : 'down'}">${boost.isUp ? '↑' : '↓'} イベント補正あり</div>`
+    ? `<div class="bc-hint-boost-badge ${boost.isUp ? 'up' : 'down'} mag-${boost.mag}">${boostArrow(boost)} イベント補正</div>`
     : '';
 
   div.innerHTML = `

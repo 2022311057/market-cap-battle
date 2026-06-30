@@ -107,10 +107,12 @@ class GameEngine {
       basePoints = 100;
 
       // 効率ボーナス（ギリギリ勝ちほど高得点。2段階のみ、最大+50点）
-      if (margin < 0.05) {
+      // 企業規模の差は数倍〜数十倍に開くのが普通なので、現実的に起こりうる範囲で
+      // 「僅差」と呼べる基準（10%未満・25%未満）に設定している
+      if (margin < 0.10) {
         bonus = { label: 'ジャスト・キル！', extra: 50 };
         justKill = true;
-      } else if (margin < 0.15) {
+      } else if (margin < 0.25) {
         bonus = { label: '絶妙！', extra: 30 };
       }
     }

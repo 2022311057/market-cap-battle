@@ -34,33 +34,90 @@ body {
 .screen { display: none; padding: 24px 16px; }
 .screen.active { display: flex; flex-direction: column; min-height: 100vh; }
 
-/* ─── タイトル画面 ───────────────────────────────────────────────── */
+/* ─── タイトル画面（ポップ仕様） ──────────────────────────────────── */
 #screen-title {
   align-items: center;
   justify-content: center;
-  gap: 28px;
-  background: var(--dark);
-  padding: 40px 20px;
+  gap: 26px;
+  position: relative;
+  overflow: hidden;
+  padding: 48px 20px;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(192,132,252,.55) 0%, transparent 42%),
+    radial-gradient(circle at 88% 12%, rgba(251,113,133,.5) 0%, transparent 38%),
+    radial-gradient(circle at 80% 88%, rgba(56,189,248,.45) 0%, transparent 42%),
+    radial-gradient(circle at 8% 90%, rgba(251,191,36,.4) 0%, transparent 38%),
+    linear-gradient(160deg, #1B1235 0%, #111827 65%);
 }
 
+/* ふわふわ漂うぼかし円でポップな雰囲気を演出 */
+#screen-title::before,
+#screen-title::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(50px);
+  opacity: .5;
+  z-index: 0;
+  pointer-events: none;
+  animation: floatBlob 10s ease-in-out infinite;
+}
+#screen-title::before {
+  width: 240px; height: 240px;
+  background: #f472b6;
+  top: -70px; left: -70px;
+}
+#screen-title::after {
+  width: 280px; height: 280px;
+  background: #38bdf8;
+  bottom: -90px; right: -70px;
+  animation-delay: -5s;
+}
+@keyframes floatBlob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(24px, -22px) scale(1.12); }
+}
+
+#screen-title > * { position: relative; z-index: 1; }
+
 .title-eyebrow {
+  display: inline-block;
   font-size: .68rem;
-  font-weight: 700;
-  letter-spacing: .28em;
-  color: var(--accent);
+  font-weight: 800;
+  letter-spacing: .24em;
   font-family: 'Courier New', monospace;
   text-align: center;
+  padding: 5px 16px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #fbbf24, #fb7185);
+  color: #2A1205;
+  box-shadow: 0 6px 16px rgba(251,113,133,.35);
 }
 
 .game-title {
-  font-size: clamp(2.2rem, 7vw, 4rem);
+  font-size: clamp(2.3rem, 7.5vw, 4.2rem);
   font-weight: 900;
   letter-spacing: -.01em;
-  color: #FFFFFF;
   text-align: center;
   line-height: 1;
   position: relative;
   padding-bottom: 20px;
+  background: linear-gradient(90deg, #fde68a, #fb7185, #c084fc, #7dd3fc, #fde68a);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 6px 20px rgba(0,0,0,.4));
+  animation: titlePop .55s cubic-bezier(.34,1.56,.64,1) both, titleShimmer 7s ease-in-out infinite 0.55s;
+}
+
+@keyframes titlePop {
+  from { transform: scale(.6) rotate(-5deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg);   opacity: 1; }
+}
+@keyframes titleShimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
 }
 
 .game-title::after {
@@ -69,14 +126,16 @@ body {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 56px;
-  height: 4px;
-  background: var(--accent);
+  width: 72px;
+  height: 5px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #fbbf24, #fb7185);
 }
 
 .game-subtitle {
-  color: #9CA3AF;
+  color: #E5E7EB;
   font-size: .95rem;
+  font-weight: 600;
   text-align: center;
 }
 
@@ -89,17 +148,43 @@ body {
 }
 
 .feature-chip {
-  background: transparent;
-  border: 1px solid #374151;
-  border-radius: 3px;
-  padding: 5px 12px;
-  font-size: .78rem;
-  color: #9CA3AF;
+  background: rgba(255,255,255,.07);
+  border: 1.5px solid rgba(255,255,255,.22);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: .76rem;
+  font-weight: 800;
+  color: #fff;
   font-family: 'Courier New', monospace;
-  letter-spacing: .04em;
+  letter-spacing: .03em;
+  transition: transform .15s cubic-bezier(.34,1.56,.64,1);
 }
+.feature-chip:hover { transform: translateY(-2px) scale(1.06); }
+.title-features .feature-chip:nth-child(6n+1) { background: rgba(251,191,36,.2);  border-color: #fbbf24; color: #fde68a; }
+.title-features .feature-chip:nth-child(6n+2) { background: rgba(251,113,133,.2); border-color: #fb7185; color: #fecdd3; }
+.title-features .feature-chip:nth-child(6n+3) { background: rgba(192,132,252,.2); border-color: #c084fc; color: #e9d5ff; }
+.title-features .feature-chip:nth-child(6n+4) { background: rgba(56,189,248,.2);  border-color: #38bdf8; color: #bae6fd; }
+.title-features .feature-chip:nth-child(6n+5) { background: rgba(74,222,128,.2);  border-color: #4ade80; color: #bbf7d0; }
+.title-features .feature-chip:nth-child(6n+6) { background: rgba(251,191,36,.2);  border-color: #fbbf24; color: #fde68a; }
 
 .title-buttons { display: flex; flex-direction: column; gap: 10px; width: 220px; }
+
+#screen-title .btn-primary {
+  background: linear-gradient(90deg, var(--accent), #ff5470);
+  box-shadow: 0 6px 20px rgba(232,0,45,.45);
+  animation: ctaPulse 2.4s ease-in-out infinite;
+}
+#screen-title .btn-primary:hover { background: linear-gradient(90deg, #C40027, #ff5470); }
+@keyframes ctaPulse {
+  0%, 100% { box-shadow: 0 6px 20px rgba(232,0,45,.45); }
+  50%      { box-shadow: 0 6px 28px rgba(255,84,112,.7); }
+}
+
+#screen-title .btn-secondary {
+  border-color: rgba(255,255,255,.4);
+  color: #F3F4F6;
+}
+#screen-title .btn-secondary:hover { border-color: #fff; color: #fff; }
 
 /* ─── 難易度セレクタ（タイトル画面） ───────────────────────────────── */
 .difficulty-selector {
@@ -109,30 +194,44 @@ body {
   gap: 8px;
   max-width: 420px;
 }
-.difficulty-title { font-size: .72rem; color: #9CA3AF; letter-spacing: .1em; }
-.difficulty-btns { display: flex; gap: 6px; }
+.difficulty-title { font-size: .72rem; color: #D1D5DB; letter-spacing: .1em; font-weight: 700; }
+.difficulty-btns { display: flex; gap: 8px; }
 
 .difficulty-btn {
-  padding: 6px 16px;
+  padding: 7px 18px;
   font-size: .82rem;
-  font-weight: 700;
-  border-radius: 3px;
-  border: 1.5px solid #374151;
-  background: transparent;
-  color: #9CA3AF;
+  font-weight: 800;
+  border-radius: 999px;
+  border: 2px solid rgba(255,255,255,.28);
+  background: rgba(255,255,255,.07);
+  color: #E5E7EB;
   cursor: pointer;
-  transition: all .12s;
+  transition: all .15s cubic-bezier(.34,1.56,.64,1);
   letter-spacing: .02em;
 }
-.difficulty-btn:hover  { border-color: var(--accent); color: #fff; }
-.difficulty-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.difficulty-btn:hover  { transform: translateY(-2px) scale(1.05); border-color: rgba(255,255,255,.6); }
+.difficulty-btn.active { transform: translateY(-1px) scale(1.04); }
+.difficulty-btn.active[data-difficulty="easy"] {
+  background: linear-gradient(135deg, #4ade80, #16a34a); border-color: #4ade80; color: #06280F;
+}
+.difficulty-btn.active[data-difficulty="normal"] {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b); border-color: #fbbf24; color: #3A2604;
+}
+.difficulty-btn.active[data-difficulty="hard"] {
+  background: linear-gradient(135deg, #fb7185, #e11d48); border-color: #fb7185; color: #fff;
+}
 
 .difficulty-desc {
   font-size: .7rem;
-  color: #6B7280;
+  color: #D1D5DB;
   text-align: center;
   line-height: 1.5;
   min-height: 2.2em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #screen-title::before, #screen-title::after,
+  .game-title, #screen-title .btn-primary { animation: none; }
 }
 
 /* ─── ルール画面 ─────────────────────────────────────────────────── */
@@ -614,12 +713,12 @@ body {
   padding: 11px 40px;
   font-size: 1rem;
   font-weight: 800;
-  border-radius: 3px;
+  border-radius: 999px;
   background: var(--surface2);
   border: 2px solid var(--border);
   color: var(--text2);
   cursor: not-allowed;
-  transition: all .15s;
+  transition: all .15s cubic-bezier(.34,1.56,.64,1);
   letter-spacing: .14em;
   font-family: 'Courier New', monospace;
 }
@@ -634,9 +733,10 @@ body {
 
 #btn-battle.ready:hover {
   background: #C40027;
-  transform: translateY(-1px);
+  transform: translateY(-1px) scale(1.03);
   box-shadow: 0 6px 20px rgba(232,0,45,.4);
 }
+#btn-battle.ready:active { transform: translateY(0) scale(.97); }
 
 /* ─── M&Aプレイヤースロット ─────────────────────────────────────── */
 .mna-wrap {
@@ -846,38 +946,40 @@ body {
 
 /* ─── 汎用ボタン ─────────────────────────────────────────────────── */
 .btn-primary {
-  padding: 12px 32px;
+  padding: 13px 34px;
   font-size: .95rem;
   font-weight: 800;
-  border-radius: 3px;
+  border-radius: 999px;
   border: none;
   background: var(--accent);
   color: #fff;
   cursor: pointer;
-  transition: background .12s, transform .12s, box-shadow .12s;
+  transition: background .12s, transform .15s cubic-bezier(.34,1.56,.64,1), box-shadow .12s;
   letter-spacing: .06em;
 }
 
 .btn-primary:hover {
   background: #C40027;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(232,0,45,.3);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 18px rgba(232,0,45,.35);
 }
+.btn-primary:active { transform: translateY(0) scale(.97); }
 
 .btn-secondary {
-  padding: 10px 24px;
+  padding: 11px 26px;
   font-size: .88rem;
   font-weight: 700;
-  border-radius: 3px;
+  border-radius: 999px;
   border: 2px solid var(--border);
   background: transparent;
   color: var(--text2);
   cursor: pointer;
-  transition: border-color .12s, color .12s;
+  transition: all .15s cubic-bezier(.34,1.56,.64,1);
   letter-spacing: .04em;
 }
 
-.btn-secondary:hover { border-color: var(--dark); color: var(--text); }
+.btn-secondary:hover { border-color: var(--dark); color: var(--text); transform: translateY(-1px) scale(1.02); }
+.btn-secondary:active { transform: translateY(0) scale(.97); }
 
 /* ─── レスポンシブ ───────────────────────────────────────────────── */
 @media (max-width: 600px) {

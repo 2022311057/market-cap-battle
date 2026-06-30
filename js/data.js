@@ -1783,6 +1783,40 @@ function getMetricHint(value, metric) {
   return getCapHint(value);
 }
 
+// ─── 難易度別の目安バンド（収録銘柄全体の分布から百分位で算出） ───────
+// 固定の金額しきい値だと指標によって偏り（例：営業利益はほぼ全社が
+// 最小バケットに入ってしまう）が出るため、難易度別バンドは225社の
+// 実データの百分位を使って指標ごとに自動調整する。
+const METRIC_SORTED_VALUES = {};
+['marketCap', 'revenue', 'operatingProfit', 'employees'].forEach(metric => {
+  METRIC_SORTED_VALUES[metric] = STOCKS.map(s => s[metric]).sort((a, b) => a - b);
+});
+
+function percentileValue(metric, p) {
+  const arr = METRIC_SORTED_VALUES[metric];
+  const idx = Math.min(arr.length - 1, Math.max(0, Math.floor(arr.length * p)));
+  return arr[idx];
+}
+
+// かんたん：5段階バンド（百分位20/40/60/80で区切り）
+function getMetricHintEasy(value, metric) {
+  const p80 = percentileValue(metric, 0.8);
+  const p60 = percentileValue(metric, 0.6);
+  const p40 = percentileValue(metric, 0.4);
+  const p20 = percentileValue(metric, 0.2);
+  if (value >= p80) return `XL（${formatMetricValue(p80, metric)}〜）`;
+  if (value >= p60) return `L（${formatMetricValue(p60, metric)}〜）`;
+  if (value >= p40) return `M（${formatMetricValue(p40, metric)}〜）`;
+  if (value >= p20) return `S（${formatMetricValue(p20, metric)}〜）`;
+  return `XS（〜${formatMetricValue(p20, metric)}）`;
+}
+
+// むずかしい：大小2択のみ（百分位50＝中央値で区切り）
+function getMetricHintHard(value, metric) {
+  const median = percentileValue(metric, 0.5);
+  return value >= median ? '大（中央値より上）' : '小（中央値より下）';
+}
+
 function getSectorColor(sector) {
   const MAP = {
     '輸送用機器':   '#4488ff',

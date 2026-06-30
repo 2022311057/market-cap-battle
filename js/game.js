@@ -1,7 +1,8 @@
 // ゲームロジック（UIに依存しない純粋なロジック）
 class GameEngine {
-  constructor(stocks) {
+  constructor(stocks, difficulty = 'normal') {
     this.allStocks = stocks;
+    this.difficulty = difficulty; // 'easy' | 'normal' | 'hard'
     this.playerHand = [];
     this.deck = [];
     this.opponentCard = null;
@@ -30,9 +31,26 @@ class GameEngine {
   startRound() {
     this.round++;
     this.selectedCardIndices = [];
-    this.opponentCard = this.deck.shift();
+    this.opponentCard = this.pickOpponent();
     this.currentEvent = EVENTS[Math.floor(Math.random() * EVENTS.length)];
     return { opponentCard: this.opponentCard, event: this.currentEvent };
+  }
+
+  // 対戦相手を抽選する。「ふつう」は完全ランダム（先頭から取り出す）。
+  // 「かんたん」は時価総額が小さい企業に、「むずかしい」は大きい企業に偏らせる。
+  pickOpponent() {
+    if (this.difficulty === 'normal' || this.deck.length === 0) {
+      return this.deck.shift();
+    }
+    const sorted = [...this.deck].sort((a, b) => a.marketCap - b.marketCap);
+    const n = sorted.length;
+    const r = Math.random();
+    // べき乗で乱数を偏らせる：easyは小さい側、hardは大きい側に寄せる
+    const skewed = this.difficulty === 'easy' ? Math.pow(r, 2.2) : 1 - Math.pow(1 - r, 2.2);
+    const idx = Math.min(n - 1, Math.floor(skewed * n));
+    const card = sorted[idx];
+    this.deck.splice(this.deck.indexOf(card), 1);
+    return card;
   }
 
   setMetric(metric) {

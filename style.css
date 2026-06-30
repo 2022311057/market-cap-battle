@@ -101,6 +101,40 @@ body {
 
 .title-buttons { display: flex; flex-direction: column; gap: 10px; width: 220px; }
 
+/* ─── 難易度セレクタ（タイトル画面） ───────────────────────────────── */
+.difficulty-selector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-width: 420px;
+}
+.difficulty-title { font-size: .72rem; color: #9CA3AF; letter-spacing: .1em; }
+.difficulty-btns { display: flex; gap: 6px; }
+
+.difficulty-btn {
+  padding: 6px 16px;
+  font-size: .82rem;
+  font-weight: 700;
+  border-radius: 3px;
+  border: 1.5px solid #374151;
+  background: transparent;
+  color: #9CA3AF;
+  cursor: pointer;
+  transition: all .12s;
+  letter-spacing: .02em;
+}
+.difficulty-btn:hover  { border-color: var(--accent); color: #fff; }
+.difficulty-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.difficulty-desc {
+  font-size: .7rem;
+  color: #6B7280;
+  text-align: center;
+  line-height: 1.5;
+  min-height: 2.2em;
+}
+
 /* ─── ルール画面 ─────────────────────────────────────────────────── */
 #screen-rules { gap: 20px; max-width: 600px; margin: 0 auto; background: var(--bg); }
 #screen-rules h2 {

@@ -17,11 +17,22 @@
     <div class="title-features">
       <span class="feature-chip">HAND × 7</span>
       <span class="feature-chip">5 ROUNDS</span>
-      <span class="feature-chip">JUST KILL ×2</span>
+      <span class="feature-chip">JUST KILL</span>
       <span class="feature-chip">EVENT</span>
       <span class="feature-chip">METRIC</span>
       <span class="feature-chip">M&amp;A</span>
     </div>
+
+    <div class="difficulty-selector">
+      <span class="difficulty-title">難易度：</span>
+      <div class="difficulty-btns">
+        <button class="difficulty-btn" data-difficulty="easy">かんたん</button>
+        <button class="difficulty-btn active" data-difficulty="normal">ふつう</button>
+        <button class="difficulty-btn" data-difficulty="hard">むずかしい</button>
+      </div>
+      <p class="difficulty-desc" id="difficulty-desc">対戦相手は完全ランダム。目安は4段階、イベント補正は方向のみ表示。</p>
+    </div>
+
     <div class="title-buttons">
       <button id="btn-start" class="btn-primary">ゲーム開始</button>
       <button id="btn-rules" class="btn-secondary">ルール説明</button>
@@ -47,6 +58,10 @@
     <div class="rule-item">
       <div class="rule-num">4</div>
       <div>手札から<strong>1枚または2枚（M&A合体）</strong>を選んで対決。2枚の場合は指標値を合算し、<strong>同業種なら+10%のシナジー</strong>、<strong>異業種なら-5%のディシナジー</strong>が掛かります。</div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-num">5</div>
+      <div><strong>難易度</strong>はタイトル画面で選択。「かんたん」は相手が小型株寄り＋目安が5段階・補正%まで見える、「むずかしい」は相手が大型株寄り＋目安は大小2択のみ・補正は対決まで非公開になります。</div>
     </div>
 
     <div class="scoring-grid">

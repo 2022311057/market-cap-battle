@@ -1,5 +1,12 @@
 // UI制御（DOM操作・イベント処理）
 let engine = null;
+let selectedDifficulty = 'normal';
+
+const DIFFICULTY_DESCRIPTIONS = {
+  easy:   '対戦相手は小型株寄りに出やすい。目安は5段階で表示され、イベント補正も対決前から%まで見える。',
+  normal: '対戦相手は完全ランダム。目安は4段階、イベント補正は方向のみ表示。',
+  hard:   '対戦相手は大型株寄りに出やすい。目安は大小2択のみで、イベント補正は対決まで完全非公開。',
+};
 
 // ─── 画面切替 ─────────────────────────────────────────────────────────
 function showScreen(id) {
@@ -60,20 +67,37 @@ function makeOpponentCardFace(stock) {
   const color  = getSectorColor(stock.sector);
   const metric = engine ? engine.currentMetric : 'marketCap';
   const event  = engine ? engine.currentEvent : null;
+  const difficulty = engine ? engine.difficulty : 'normal';
   const boost  = getBoostInfo(stock, metric, event);
-  // 相手カードの「目安」は補正前の実力値で判定する（補正後の値・割合は対決まで非公開）
-  const hintVal = stock[metric] || 0;
 
   const div = document.createElement('div');
   let cls = 'battle-card opponent-face';
-  if (boost) cls += boost.isUp ? ' evt-boosted-up' : ' evt-boosted-down';
-  div.className = cls;
   div.style.setProperty('--sector-color', color);
 
-  // 正確な数値・%は対決まで非公開。強さ（矢印の数）と方向だけを見せる
-  const boostNote = boost
-    ? `<div class="bc-hint-boost-badge ${boost.isUp ? 'up' : 'down'} mag-${boost.mag}">${boostArrow(boost)} イベント補正</div>`
-    : '';
+  // 難易度ごとに「目安」の精度とイベント補正の見え方を変える
+  // かんたん：5段階バンド（補正後の値で判定）＋ 補正%まで表示
+  // ふつう　：4段階バンド（補正前の値で判定）＋ 補正の方向・強さのみ表示
+  // むずかしい：大小2択のみ（補正前の値で判定）＋ 補正は対決まで完全非公開
+  let hintBand, boostNote;
+  if (difficulty === 'easy') {
+    const hintVal = boost ? boost.eff : (stock[metric] || 0);
+    hintBand = getMetricHintEasy(hintVal, metric);
+    boostNote = boost
+      ? `<div class="bc-hint-boost-badge ${boost.isUp ? 'up' : 'down'} mag-${boost.mag}">${boostArrow(boost)} イベント補正 ${boost.isUp ? '+' : ''}${boost.pct}%</div>`
+      : '';
+    if (boost) cls += boost.isUp ? ' evt-boosted-up' : ' evt-boosted-down';
+  } else if (difficulty === 'hard') {
+    hintBand = getMetricHintHard(stock[metric] || 0, metric);
+    boostNote = '';
+  } else {
+    const hintVal = stock[metric] || 0;
+    hintBand = getMetricHint(hintVal, metric);
+    boostNote = boost
+      ? `<div class="bc-hint-boost-badge ${boost.isUp ? 'up' : 'down'} mag-${boost.mag}">${boostArrow(boost)} イベント補正</div>`
+      : '';
+    if (boost) cls += boost.isUp ? ' evt-boosted-up' : ' evt-boosted-down';
+  }
+  div.className = cls;
 
   div.innerHTML = `
     <div class="bc-sector" style="background:${color}20;color:${color}">${stock.sector}</div>
@@ -81,7 +105,7 @@ function makeOpponentCardFace(stock) {
     <div class="bc-ticker">${stock.ticker}</div>
     <div class="bc-hint-area">
       <div class="bc-hint-label">${getMetricLabel(metric)}の目安</div>
-      <div class="bc-hint-value">${getMetricHint(hintVal, metric)}</div>
+      <div class="bc-hint-value">${hintBand}</div>
       ${boostNote}
     </div>
   `;
@@ -236,7 +260,7 @@ function updateBattleBtn() {
 
 // ─── ゲームフロー ────────────────────────────────────────────────────
 function startGame() {
-  engine = new GameEngine(STOCKS);
+  engine = new GameEngine(STOCKS, selectedDifficulty);
   engine.start();
   showScreen('screen-game');
   hideResult();
@@ -446,6 +470,17 @@ document.addEventListener('DOMContentLoaded', () => {
       renderHand();
       renderPlayerSlot();
       renderOpponentCard(engine.opponentCard);
+    });
+  });
+
+  // 難易度セレクタ（タイトル画面）
+  document.querySelectorAll('.difficulty-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedDifficulty = btn.dataset.difficulty;
+      document.querySelectorAll('.difficulty-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.difficulty === selectedDifficulty);
+      });
+      document.getElementById('difficulty-desc').textContent = DIFFICULTY_DESCRIPTIONS[selectedDifficulty];
     });
   });
 });

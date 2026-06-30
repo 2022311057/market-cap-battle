@@ -1608,10 +1608,13 @@ const EVENTS = [
   },
   {
     id: 'rateHike', name: '日銀利上げ',
-    desc: '政策金利が上昇。銀行の利ざや拡大が期待される。',
+    desc: '政策金利が上昇。銀行の利ざや拡大が期待される一方、不動産には逆風。',
     effects: [
       { sector: '銀行業',       multiplier: 1.25 },
       { sector: 'その他金融業', multiplier: 1.15 },
+      { sector: '保険業',       multiplier: 1.15 },
+      { sector: '証券業',       multiplier: 1.10 },
+      { sector: '不動産業',     multiplier: 0.90 },
     ]
   },
   {
@@ -1621,15 +1624,28 @@ const EVENTS = [
       { sector: '電気機器',     multiplier: 1.30 },
       { sector: '情報・通信業', multiplier: 1.20 },
       { sector: '化学',         multiplier: 1.10 },
+      { sector: '精密機器',     multiplier: 1.15 },
     ]
   },
   {
     id: 'resourceHigh', name: '資源価格高騰',
-    desc: '原油・鉄鉱石が急騰。素材系企業に追い風。',
+    desc: '原油・鉄鉱石が急騰。素材・資源系企業に追い風、エネルギーコストは重荷に。',
     effects: [
-      { sector: '鉄鋼',       multiplier: 1.30 },
-      { sector: '化学',       multiplier: 1.15 },
-      { sector: '輸送用機器', multiplier: 0.92 },
+      { sector: '鉄鋼',         multiplier: 1.30 },
+      { sector: '化学',         multiplier: 1.15 },
+      { sector: '輸送用機器',   multiplier: 0.92 },
+      { sector: '非鉄金属',     multiplier: 1.25 },
+      { sector: '鉱業',         multiplier: 1.30 },
+      { sector: '電気・ガス業', multiplier: 0.88 },
+    ]
+  },
+  {
+    id: 'shippingTrade', name: '海運・商社が活況',
+    desc: '海上輸送需要と資源取引が拡大。海運・商社・エネルギー関連が活況。',
+    effects: [
+      { sector: '海運業',         multiplier: 1.25 },
+      { sector: '卸売業',         multiplier: 1.20 },
+      { sector: '石油・石炭製品', multiplier: 1.15 },
     ]
   },
   {
@@ -1640,6 +1656,8 @@ const EVENTS = [
       { sector: '小売業',     multiplier: 1.20 },
       { sector: '空運業',     multiplier: 1.20 },
       { sector: '陸運業',     multiplier: 1.10 },
+      { sector: '繊維製品',   multiplier: 1.15 },
+      { sector: 'その他製品', multiplier: 1.12 },
     ]
   },
   {
@@ -1684,6 +1702,8 @@ const EVENTS = [
       { sector: '情報・通信業', multiplier: 1.05 },
       { sector: 'サービス業',   multiplier: 0.88 },
       { sector: '小売業',       multiplier: 0.92 },
+      { sector: '食料品',       multiplier: 1.10 },
+      { sector: '水産・農林業', multiplier: 1.10 },
     ]
   },
   {
@@ -1698,9 +1718,12 @@ const EVENTS = [
     id: 'infrastructure', name: 'インフラ整備ブーム',
     desc: '大規模インフラ投資が始動。建設・素材セクターが上昇。',
     effects: [
-      { sector: '鉄鋼', multiplier: 1.18 },
-      { sector: '機械', multiplier: 1.15 },
-      { sector: '化学', multiplier: 1.08 },
+      { sector: '鉄鋼',             multiplier: 1.18 },
+      { sector: '機械',             multiplier: 1.15 },
+      { sector: '化学',             multiplier: 1.08 },
+      { sector: '建設業',           multiplier: 1.25 },
+      { sector: 'ガラス・土石製品', multiplier: 1.15 },
+      { sector: '倉庫・運輸関連業', multiplier: 1.10 },
     ]
   },
   {

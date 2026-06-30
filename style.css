@@ -616,20 +616,41 @@ body {
 
 .mna-center-badge {
   position: absolute;
-  bottom: -12px;
+  bottom: -54px;
   left: 50%;
   transform: translateX(-50%);
   background: var(--dark);
   color: #fff;
-  font-weight: 900;
-  font-size: .72rem;
-  padding: 3px 14px;
-  border-radius: 2px;
+  border-radius: 3px;
   z-index: 3;
+  padding: 6px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
   white-space: nowrap;
-  letter-spacing: .1em;
   font-family: 'Courier New', monospace;
 }
+
+.mna-badge-title {
+  font-weight: 900;
+  font-size: .72rem;
+  letter-spacing: .1em;
+}
+
+.mna-badge-total {
+  font-weight: 800;
+  font-size: .85rem;
+  color: var(--gold);
+}
+
+.mna-badge-synergy {
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+.mna-badge-synergy.synergy    { color: #6EE7A8; }
+.mna-badge-synergy.dissynergy { color: #FCA5A5; }
 
 /* ─── 結果オーバーレイ ─────────────────────────────────────────────── */
 #result-overlay {
@@ -692,6 +713,8 @@ body {
 .result-bonus.show    { display: block; animation: popIn .3s .1s both cubic-bezier(0.34,1.56,0.64,1); }
 .result-justkill { font-size: 1rem; font-weight: 900; color: var(--accent); display: none; font-family: 'Courier New', monospace; letter-spacing: .04em; }
 .result-justkill.show { display: block; animation: popIn .3s .2s both cubic-bezier(0.34,1.56,0.64,1); }
+.result-justkill.synergy    { color: var(--win); }
+.result-justkill.dissynergy { color: var(--lose); }
 .result-total    { font-size: 1.5rem; font-weight: 900; color: var(--text); border-top: 1px solid var(--border); padding-top: 8px; margin-top: 4px; width: 100%; text-align: center; font-family: 'Courier New', monospace; }
 .result-event    { font-size: .72rem; color: var(--text2); background: var(--surface2); padding: 2px 10px; border-radius: 2px; border: 1px solid var(--border); font-family: 'Courier New', monospace; }
 

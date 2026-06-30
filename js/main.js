@@ -145,7 +145,7 @@ function renderEventBanner(event) {
     effectsEl.appendChild(chip);
   });
 
-  // 売上高・営業利益のみに効果があることを明示
+  // 時価総額・売上高・営業利益に効果があることを明示（従業員数は対象外）
   const noteEl = document.getElementById('event-metric-note');
   if (noteEl) noteEl.style.display = event.effects.length > 0 ? '' : 'none';
 
@@ -179,14 +179,30 @@ function renderPlayerSlot() {
   // M&A: 2枚重ねて表示
   const wrap = document.createElement('div');
   wrap.className = 'mna-wrap';
+  const cards = engine.selectedCardIndices.map(idx => engine.playerHand[idx]);
   engine.selectedCardIndices.forEach((idx, i) => {
     const card = makeBattleCard(engine.playerHand[idx], true);
     card.classList.add('mna-card', `mna-card-${i}`);
     wrap.appendChild(card);
   });
+
+  // 合体後の合計値とシナジー/ディシナジーをプレビュー表示
+  const metric = engine.currentMetric;
+  const event = engine.currentEvent;
+  const rawSum = cards.reduce((sum, c) => sum + engine.getEffectiveValue(c, metric, event), 0);
+  const multiplier = engine.getMnaMultiplier(cards);
+  const total = Math.round(rawSum * multiplier);
+  const sameSector = cards[0].sector === cards[1].sector;
+
   const badge = document.createElement('div');
   badge.className = 'mna-center-badge';
-  badge.textContent = 'M&A 合体！';
+  badge.innerHTML = `
+    <div class="mna-badge-title">M&A 合体！</div>
+    <div class="mna-badge-total">合計 ${formatMetricValue(total, metric)}</div>
+    <div class="mna-badge-synergy ${sameSector ? 'synergy' : 'dissynergy'}">
+      ${sameSector ? '⚡ 同業種シナジー +10%' : '⚠ 異業種ディシナジー -5%'}
+    </div>
+  `;
   wrap.appendChild(badge);
   slot.appendChild(wrap);
 }
@@ -309,8 +325,17 @@ function showResult(result) {
     bonusEl.className = 'result-bonus';
   }
 
-  // ジャスト・キル演出はボーナス行に統合済みのため、専用行は非表示にする
-  document.getElementById('result-justkill').className = 'result-justkill';
+  // ジャスト・キル演出はボーナス行に統合済み。この行はM&Aのシナジー/ディシナジー表示に使う
+  const mnaEl = document.getElementById('result-justkill');
+  if (result.isMnA) {
+    mnaEl.textContent = result.mnaSameSector
+      ? '⚡ 同業種シナジー +10%'
+      : '⚠ 異業種ディシナジー -5%';
+    mnaEl.className = 'result-justkill show ' + (result.mnaSameSector ? 'synergy' : 'dissynergy');
+  } else {
+    mnaEl.textContent = '';
+    mnaEl.className = 'result-justkill';
+  }
 
   document.getElementById('result-total').textContent = `合計 +${result.totalPoints}点`;
 

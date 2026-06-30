@@ -60,13 +60,20 @@ class GameEngine {
     }
   }
 
-  // イベント補正込みの有効値を取得（売上高・営業利益のみに適用）
+  // イベント補正込みの有効値を取得（時価総額・売上高・営業利益に適用。従業員数は対象外）
   getEffectiveValue(stock, metric, event) {
     const raw = stock[metric] || 0;
-    if (metric !== 'revenue' && metric !== 'operatingProfit') return raw;
+    if (metric === 'employees') return raw;
     if (!event || !event.effects || event.effects.length === 0) return raw;
     const eff = event.effects.find(e => e.sector === stock.sector);
     return eff ? Math.round(raw * eff.multiplier) : raw;
+  }
+
+  // M&Aの合体倍率：同業種同士は「シナジー」で+10%、異業種は「ディシナジー」で-5%
+  getMnaMultiplier(cards) {
+    if (cards.length < 2) return 1;
+    const sameSector = cards.every(c => c.sector === cards[0].sector);
+    return sameSector ? 1.10 : 0.95;
   }
 
   battle() {
@@ -77,10 +84,13 @@ class GameEngine {
     const playerCards = this.selectedCardIndices.map(i => this.playerHand[i]);
     const isMnA = playerCards.length > 1;
 
-    // プレイヤー側：複数カードは合算
-    const playerEffValue = playerCards.reduce((sum, card) => {
+    // プレイヤー側：複数カードは合算した上でM&A倍率（シナジー/ディシナジー）を適用
+    const playerRawSum = playerCards.reduce((sum, card) => {
       return sum + this.getEffectiveValue(card, metric, event);
     }, 0);
+    const mnaMultiplier = this.getMnaMultiplier(playerCards);
+    const mnaSameSector = isMnA ? playerCards.every(c => c.sector === playerCards[0].sector) : null;
+    const playerEffValue = isMnA ? Math.round(playerRawSum * mnaMultiplier) : playerRawSum;
 
     const opponentEffValue = this.getEffectiveValue(this.opponentCard, metric, event);
 
@@ -120,6 +130,8 @@ class GameEngine {
       bonus,
       justKill,
       isMnA,
+      mnaMultiplier,
+      mnaSameSector,
       metric,
       event,
       playerEffValue,
@@ -142,11 +154,13 @@ class GameEngine {
   }
 
   getScoreRank() {
-    // 5ラウンド全勝（ボーナスなし）=500点を基準ライン（投資家見習い）に設定
-    if (this.score >= 700) return { label: '株の神様',      stars: 5 };
-    if (this.score >= 600) return { label: '敏腕トレーダー', stars: 4 };
-    if (this.score >= 500) return { label: '投資家見習い',   stars: 3 };
-    if (this.score >= 350) return { label: '株式初心者',     stars: 2 };
+    // シミュレーション（完全情報での最適プレイ）の得点分布に基づき設定。
+    // 660点は最適プレイでも上位1割程度というラインで、実戦では純粋な実力＋運が
+    // 噛み合った時だけ届く「特別な達成」になるよう調整した。
+    if (this.score >= 660) return { label: '株の神様',      stars: 5 };
+    if (this.score >= 580) return { label: '敏腕トレーダー', stars: 4 };
+    if (this.score >= 480) return { label: '投資家見習い',   stars: 3 };
+    if (this.score >= 300) return { label: '株式初心者',     stars: 2 };
     return                        { label: 'もっと勉強が必要', stars: 1 };
   }
 }

@@ -34,7 +34,7 @@ body {
 .screen { display: none; padding: 24px 16px; }
 .screen.active { display: flex; flex-direction: column; min-height: 100vh; }
 
-/* ─── タイトル画面（ポップ仕様） ──────────────────────────────────── */
+/* ─── タイトル画面 ─────────────────────────────────────────────── */
 #screen-title {
   align-items: center;
   justify-content: center;
@@ -42,40 +42,18 @@ body {
   position: relative;
   overflow: hidden;
   padding: 48px 20px;
-  background:
-    radial-gradient(circle at 18% 22%, rgba(192,132,252,.55) 0%, transparent 42%),
-    radial-gradient(circle at 88% 12%, rgba(251,113,133,.5) 0%, transparent 38%),
-    radial-gradient(circle at 80% 88%, rgba(56,189,248,.45) 0%, transparent 42%),
-    radial-gradient(circle at 8% 90%, rgba(251,191,36,.4) 0%, transparent 38%),
-    linear-gradient(160deg, #1B1235 0%, #111827 65%);
+  background: linear-gradient(160deg, #FFFAF5 0%, #FFF4F6 55%, #FDF6FF 100%);
 }
 
-/* ふわふわ漂うぼかし円でポップな雰囲気を演出 */
-#screen-title::before,
-#screen-title::after {
+/* 背景に薄いドット格子（株価チャートのグリッドをイメージ） */
+#screen-title::before {
   content: '';
   position: absolute;
-  border-radius: 50%;
-  filter: blur(50px);
-  opacity: .5;
-  z-index: 0;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(180,80,80,.12) 1px, transparent 1px);
+  background-size: 28px 28px;
   pointer-events: none;
-  animation: floatBlob 10s ease-in-out infinite;
-}
-#screen-title::before {
-  width: 240px; height: 240px;
-  background: #f472b6;
-  top: -70px; left: -70px;
-}
-#screen-title::after {
-  width: 280px; height: 280px;
-  background: #38bdf8;
-  bottom: -90px; right: -70px;
-  animation-delay: -5s;
-}
-@keyframes floatBlob {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50%      { transform: translate(24px, -22px) scale(1.12); }
 }
 
 #screen-title > * { position: relative; z-index: 1; }
@@ -89,9 +67,9 @@ body {
   text-align: center;
   padding: 5px 16px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #fbbf24, #fb7185);
-  color: #2A1205;
-  box-shadow: 0 6px 16px rgba(251,113,133,.35);
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(232,0,45,.25);
 }
 
 .game-title {
@@ -102,13 +80,13 @@ body {
   line-height: 1;
   position: relative;
   padding-bottom: 20px;
-  background: linear-gradient(90deg, #fde68a, #fb7185, #c084fc, #7dd3fc, #fde68a);
-  background-size: 300% 100%;
+  background: linear-gradient(100deg, #B80020 0%, #E8002D 40%, #C69214 100%);
+  background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 6px 20px rgba(0,0,0,.4));
-  animation: titlePop .55s cubic-bezier(.34,1.56,.64,1) both, titleShimmer 7s ease-in-out infinite 0.55s;
+  filter: drop-shadow(0 2px 6px rgba(200,0,30,.15));
+  animation: titlePop .55s cubic-bezier(.34,1.56,.64,1) both, titleShimmer 6s ease-in-out infinite 0.55s;
 }
 
 @keyframes titlePop {
@@ -127,13 +105,13 @@ body {
   left: 50%;
   transform: translateX(-50%);
   width: 72px;
-  height: 5px;
+  height: 4px;
   border-radius: 3px;
-  background: linear-gradient(90deg, #fbbf24, #fb7185);
+  background: linear-gradient(90deg, var(--accent), #C69214);
 }
 
 .game-subtitle {
-  color: #E5E7EB;
+  color: var(--text2);
   font-size: .95rem;
   font-weight: 600;
   text-align: center;
@@ -148,24 +126,22 @@ body {
 }
 
 .feature-chip {
-  background: rgba(255,255,255,.07);
-  border: 1.5px solid rgba(255,255,255,.22);
   border-radius: 999px;
   padding: 6px 14px;
   font-size: .76rem;
   font-weight: 800;
-  color: #fff;
   font-family: 'Courier New', monospace;
   letter-spacing: .03em;
   transition: transform .15s cubic-bezier(.34,1.56,.64,1);
+  border: 1.5px solid transparent;
 }
 .feature-chip:hover { transform: translateY(-2px) scale(1.06); }
-.title-features .feature-chip:nth-child(6n+1) { background: rgba(251,191,36,.2);  border-color: #fbbf24; color: #fde68a; }
-.title-features .feature-chip:nth-child(6n+2) { background: rgba(251,113,133,.2); border-color: #fb7185; color: #fecdd3; }
-.title-features .feature-chip:nth-child(6n+3) { background: rgba(192,132,252,.2); border-color: #c084fc; color: #e9d5ff; }
-.title-features .feature-chip:nth-child(6n+4) { background: rgba(56,189,248,.2);  border-color: #38bdf8; color: #bae6fd; }
-.title-features .feature-chip:nth-child(6n+5) { background: rgba(74,222,128,.2);  border-color: #4ade80; color: #bbf7d0; }
-.title-features .feature-chip:nth-child(6n+6) { background: rgba(251,191,36,.2);  border-color: #fbbf24; color: #fde68a; }
+.title-features .feature-chip:nth-child(6n+1) { background: #FEF3C7; border-color: #FCD34D; color: #78350F; }
+.title-features .feature-chip:nth-child(6n+2) { background: #FFE4E6; border-color: #FDA4AF; color: #9F1239; }
+.title-features .feature-chip:nth-child(6n+3) { background: #F3E8FF; border-color: #D8B4FE; color: #6B21A8; }
+.title-features .feature-chip:nth-child(6n+4) { background: #E0F2FE; border-color: #7DD3FC; color: #0C4A6E; }
+.title-features .feature-chip:nth-child(6n+5) { background: #D1FAE5; border-color: #6EE7B7; color: #064E3B; }
+.title-features .feature-chip:nth-child(6n+6) { background: #FEF3C7; border-color: #FCD34D; color: #78350F; }
 
 .title-buttons { display: flex; flex-direction: column; gap: 10px; width: 220px; }
 
@@ -181,10 +157,10 @@ body {
 }
 
 #screen-title .btn-secondary {
-  border-color: rgba(255,255,255,.4);
-  color: #F3F4F6;
+  border-color: var(--border);
+  color: var(--text2);
 }
-#screen-title .btn-secondary:hover { border-color: #fff; color: #fff; }
+#screen-title .btn-secondary:hover { border-color: var(--text2); color: var(--text); }
 
 /* ─── 難易度セレクタ（タイトル画面） ───────────────────────────────── */
 .difficulty-selector {
@@ -194,7 +170,7 @@ body {
   gap: 8px;
   max-width: 420px;
 }
-.difficulty-title { font-size: .72rem; color: #D1D5DB; letter-spacing: .1em; font-weight: 700; }
+.difficulty-title { font-size: .72rem; color: var(--text2); letter-spacing: .1em; font-weight: 700; }
 .difficulty-btns { display: flex; gap: 8px; }
 
 .difficulty-btn {
@@ -202,14 +178,14 @@ body {
   font-size: .82rem;
   font-weight: 800;
   border-radius: 999px;
-  border: 2px solid rgba(255,255,255,.28);
-  background: rgba(255,255,255,.07);
-  color: #E5E7EB;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
   cursor: pointer;
   transition: all .15s cubic-bezier(.34,1.56,.64,1);
   letter-spacing: .02em;
 }
-.difficulty-btn:hover  { transform: translateY(-2px) scale(1.05); border-color: rgba(255,255,255,.6); }
+.difficulty-btn:hover  { transform: translateY(-2px) scale(1.05); border-color: var(--text2); }
 .difficulty-btn.active { transform: translateY(-1px) scale(1.04); }
 .difficulty-btn.active[data-difficulty="easy"] {
   background: linear-gradient(135deg, #4ade80, #16a34a); border-color: #4ade80; color: #06280F;
@@ -223,14 +199,13 @@ body {
 
 .difficulty-desc {
   font-size: .7rem;
-  color: #D1D5DB;
+  color: var(--text2);
   text-align: center;
   line-height: 1.5;
   min-height: 2.2em;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #screen-title::before, #screen-title::after,
   .game-title, #screen-title .btn-primary { animation: none; }
 }
 

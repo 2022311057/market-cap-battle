@@ -42,17 +42,14 @@ body {
   position: relative;
   overflow: hidden;
   padding: 48px 20px;
-  background: linear-gradient(160deg, #FFFAF5 0%, #FFF4F6 55%, #FDF6FF 100%);
+  background: url('images/haikei1.png') center/cover no-repeat;
 }
 
-/* 背景に薄いドット格子（株価チャートのグリッドをイメージ） */
 #screen-title::before {
   content: '';
   position: absolute;
   inset: 0;
-  background-image:
-    radial-gradient(circle, rgba(180,80,80,.12) 1px, transparent 1px);
-  background-size: 28px 28px;
+  background: rgba(0, 8, 25, 0.55);
   pointer-events: none;
 }
 
@@ -205,6 +202,42 @@ body {
   text-align: center;
   line-height: 1.5;
   min-height: 2.2em;
+}
+
+/* ─── タイトル背景（暗い画像）用テキスト色上書き ───────────────── */
+#screen-title .game-title {
+  filter: drop-shadow(0 2px 12px rgba(0,0,0,.75));
+}
+
+#screen-title .game-subtitle {
+  color: rgba(255,255,255,.88);
+  text-shadow: 0 1px 6px rgba(0,0,0,.55);
+}
+
+#screen-title .difficulty-title { color: rgba(255,255,255,.75); }
+#screen-title .difficulty-desc  { color: rgba(255,255,255,.68); }
+
+#screen-title .difficulty-btn {
+  background: rgba(255,255,255,.13);
+  border-color: rgba(255,255,255,.42);
+  color: rgba(255,255,255,.92);
+  backdrop-filter: blur(6px);
+}
+#screen-title .difficulty-btn:hover {
+  background: rgba(255,255,255,.24);
+  border-color: rgba(255,255,255,.78);
+}
+
+#screen-title .btn-secondary {
+  border-color: rgba(255,255,255,.62);
+  color: rgba(255,255,255,.92);
+  background: rgba(255,255,255,.12);
+  backdrop-filter: blur(6px);
+}
+#screen-title .btn-secondary:hover {
+  border-color: #fff;
+  color: #fff;
+  background: rgba(255,255,255,.22);
 }
 
 @media (prefers-reduced-motion: reduce) {

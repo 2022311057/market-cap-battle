@@ -351,15 +351,8 @@ function showResult(result) {
   }
 
   const mnaEl = document.getElementById('result-justkill');
-  if (result.isMnA) {
-    mnaEl.textContent = result.mnaSameSector
-      ? '⚡ 同業種シナジー +10%'
-      : '⚠ 異業種ディシナジー -5%';
-    mnaEl.className = 'result-justkill show ' + (result.mnaSameSector ? 'synergy' : 'dissynergy');
-  } else {
-    mnaEl.textContent = '';
-    mnaEl.className = 'result-justkill';
-  }
+  mnaEl.textContent = '';
+  mnaEl.className = 'result-justkill';
 
   document.getElementById('result-total').textContent = `合計 +${result.totalPoints}点`;
 

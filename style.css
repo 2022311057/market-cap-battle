@@ -157,10 +157,12 @@ body {
 }
 
 #screen-title .btn-secondary {
-  border-color: var(--border);
-  color: var(--text2);
+  border-color: var(--text2);
+  border-width: 2px;
+  color: var(--text);
+  background: var(--surface);
 }
-#screen-title .btn-secondary:hover { border-color: var(--text2); color: var(--text); }
+#screen-title .btn-secondary:hover { border-color: var(--text); background: var(--surface2); }
 
 /* ─── 難易度セレクタ（タイトル画面） ───────────────────────────────── */
 .difficulty-selector {

@@ -343,14 +343,13 @@ function showResult(result) {
 
   const bonusEl = document.getElementById('result-bonus');
   if (result.bonus) {
-    bonusEl.textContent = `${result.bonus.label} ボーナス +${result.bonus.extra}点`;
+    bonusEl.textContent = `🔥 ${result.bonus.label}ボーナス！ +${result.bonus.extra}点`;
     bonusEl.className = 'result-bonus show';
   } else {
     bonusEl.textContent = '';
     bonusEl.className = 'result-bonus';
   }
 
-  // ジャスト・キル演出はボーナス行に統合済み。この行はM&Aのシナジー/ディシナジー表示に使う
   const mnaEl = document.getElementById('result-justkill');
   if (result.isMnA) {
     mnaEl.textContent = result.mnaSameSector
@@ -441,7 +440,7 @@ function showGameOver() {
     const playerName = r.isMnA
       ? `${r.playerCards[0].name}＋${r.playerCards[1].name}`
       : r.playerCards[0].name;
-    const bonusTxt = r.bonus ? ` ${r.justKill ? '⚡' : ''}${r.bonus.label}` : '';
+    const bonusTxt = r.bonus ? ` 🔥${r.bonus.label}ボーナス` : '';
     li.innerHTML = `
       <span class="h-round">R${r.round}</span>
       <span class="h-result">${r.playerWins ? '勝' : '負'}</span>

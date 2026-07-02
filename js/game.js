@@ -13,6 +13,7 @@ class GameEngine {
     this.history = [];
     this.currentEvent = null;
     this.currentMetric = 'marketCap';
+    this.winStreak = 0;
   }
 
   start() {
@@ -26,6 +27,7 @@ class GameEngine {
     this.selectedCardIndices = [];
     this.currentEvent = null;
     this.currentMetric = 'marketCap';
+    this.winStreak = 0;
   }
 
   startRound() {
@@ -118,21 +120,16 @@ class GameEngine {
       : 1;
 
     let basePoints = 0;
-    let bonus = null;   // 効率ボーナス（最高1件、基本点の50%まで）
-    let justKill = false;
+    let bonus = null;
 
+    const STREAK_BONUS = { 2: 30, 3: 50, 4: 50, 5: 70 };
     if (playerWins) {
       basePoints = 100;
-
-      // 効率ボーナス（ギリギリ勝ちほど高得点。2段階のみ、最大+50点）
-      // 企業規模の差は数倍〜数十倍に開くのが普通なので、現実的に起こりうる範囲で
-      // 「僅差」と呼べる基準（10%未満・25%未満）に設定している
-      if (margin < 0.10) {
-        bonus = { label: 'ジャスト・キル！', extra: 50 };
-        justKill = true;
-      } else if (margin < 0.25) {
-        bonus = { label: '絶妙！', extra: 30 };
-      }
+      this.winStreak++;
+      const extra = STREAK_BONUS[this.winStreak];
+      if (extra) bonus = { label: `${this.winStreak}連勝`, extra };
+    } else {
+      this.winStreak = 0;
     }
 
     const totalPoints = basePoints + (bonus ? bonus.extra : 0);
@@ -148,7 +145,6 @@ class GameEngine {
       margin,
       basePoints,
       bonus,
-      justKill,
       isMnA,
       mnaMultiplier,
       mnaSameSector,
@@ -174,13 +170,11 @@ class GameEngine {
   }
 
   getScoreRank() {
-    // シミュレーション（完全情報での最適プレイ）の得点分布に基づき設定。
-    // 660点は最適プレイでも上位1割程度というラインで、実戦では純粋な実力＋運が
-    // 噛み合った時だけ届く「特別な達成」になるよう調整した。
+    // 最大700点（全5勝＋連勝ボーナス合計200点）。660点は全勝必須ライン。
     if (this.score >= 660) return { label: '株の神様',      stars: 5 };
-    if (this.score >= 580) return { label: '敏腕トレーダー', stars: 4 };
-    if (this.score >= 480) return { label: '投資家見習い',   stars: 3 };
-    if (this.score >= 300) return { label: '株式初心者',     stars: 2 };
+    if (this.score >= 450) return { label: '敏腕トレーダー', stars: 4 };
+    if (this.score >= 280) return { label: '投資家見習い',   stars: 3 };
+    if (this.score >= 100) return { label: '株式初心者',     stars: 2 };
     return                        { label: 'もっと勉強が必要', stars: 1 };
   }
 }

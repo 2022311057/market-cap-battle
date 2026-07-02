@@ -30,50 +30,6 @@
     </div>
   </div>
 
-  <!-- ─── ルール画面 ─────────────────────────────────────────────── -->
-  <div id="screen-rules" class="screen">
-    <h2>ルール</h2>
-
-    <div class="rule-item">
-      <div class="rule-num">1</div>
-      <div>日経225の収録企業（225社）のカードが<strong>7枚</strong>配られます。各カードには会社名・業種・各種指標が記載されています。</div>
-    </div>
-    <div class="rule-item">
-      <div class="rule-num">2</div>
-      <div>毎ラウンド開始時に<strong>マクロイベント</strong>が発生し、特定の業種の数値を補正します。</div>
-    </div>
-    <div class="rule-item">
-      <div class="rule-num">3</div>
-      <div><strong>勝負指標</strong>（時価総額・売上高・営業利益・従業員数）を選んで対決します。相手の指標値は「目安のみ」表示されます。</div>
-    </div>
-    <div class="rule-item">
-      <div class="rule-num">4</div>
-      <div>手札から<strong>1枚または2枚（M&A合体）</strong>を選んで対決。2枚の場合は指標値を合算し、<strong>同業種なら+10%のシナジー</strong>、<strong>異業種なら-5%のディシナジー</strong>が掛かります。</div>
-    </div>
-    <div class="rule-item">
-      <div class="rule-num">5</div>
-      <div><strong>難易度</strong>はタイトル画面で選択。「かんたん」は相手が小型株寄り＋目安が5段階・補正%まで見える、「むずかしい」は相手が大型株寄り＋目安は大小2択のみ・補正は対決まで非公開になります。</div>
-    </div>
-
-    <div class="scoring-grid">
-      <h3>ボーナス点（勝利時のみ・最大で基本点の50%まで）</h3>
-      <div class="score-row">
-        <span>基本勝利</span>
-        <span class="score-badge badge-green">+100点</span>
-      </div>
-      <div class="score-row">
-        <span>差が25%未満の勝利</span>
-        <span class="score-badge badge-blue">絶妙！ +30点</span>
-      </div>
-      <div class="score-row">
-        <span>差が10%未満の勝利</span>
-        <span class="score-badge badge-gold">⚡ ジャスト・キル！ +50点</span>
-      </div>
-    </div>
-
-    <button id="btn-rules-back" class="btn-secondary" style="align-self:flex-start">← 戻る</button>
-  </div>
-
   <!-- ─── ゲーム画面 ─────────────────────────────────────────────── -->
   <div id="screen-game" class="screen">
 
@@ -207,8 +163,22 @@
 
 </div><!-- /app -->
 
+<!-- ─── チュートリアルオーバーレイ ────────────────────────────── -->
+<div id="tutorial-overlay" class="hidden">
+  <div id="tutorial-panel">
+    <div class="tut-meta">
+      <span class="tut-progress">STEP <span id="tutorial-cur" class="tut-cur-num">1</span> / <span id="tutorial-total">6</span></span>
+      <button id="btn-tskip">スキップ</button>
+    </div>
+    <h3 id="tutorial-heading"></h3>
+    <p id="tutorial-body"></p>
+    <button id="btn-tnext" class="btn-primary">次へ →</button>
+  </div>
+</div>
+
 <script src="js/data.js"></script>
 <script src="js/game.js"></script>
+<script src="js/tutorial.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

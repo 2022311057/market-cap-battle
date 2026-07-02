@@ -211,6 +211,108 @@ body {
   .game-title, #screen-title .btn-primary { animation: none; }
 }
 
+/* ─── チュートリアルオーバーレイ ──────────────────────────────────── */
+#tutorial-overlay {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 800;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+}
+#tutorial-overlay.hidden { display: none; }
+
+#tutorial-panel {
+  pointer-events: all;
+  background: #fff;
+  border-top: 3px solid var(--accent);
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -6px 36px rgba(0,0,0,.16);
+  padding: 16px 24px 26px;
+  width: min(640px, 100vw);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tut-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tut-progress {
+  font-size: .7rem;
+  font-weight: 700;
+  color: var(--text2);
+  letter-spacing: .06em;
+  font-family: 'Courier New', monospace;
+}
+
+.tut-cur-num {
+  color: var(--accent);
+  font-size: .88rem;
+}
+
+#btn-tskip {
+  font-size: .72rem;
+  background: none;
+  border: none;
+  color: var(--text2);
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 4px;
+  transition: color .12s;
+}
+#btn-tskip:hover { color: var(--text); text-decoration: underline; }
+
+#tutorial-heading {
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: var(--accent);
+  margin: 0;
+}
+
+#tutorial-body {
+  font-size: .83rem;
+  line-height: 1.68;
+  color: var(--text);
+  margin: 0;
+}
+
+#btn-tnext {
+  align-self: flex-end;
+  padding: 9px 22px;
+  font-size: .86rem;
+  margin-top: 4px;
+}
+
+/* チュートリアル中はゲーム画面下部にパネル分の余白を確保 */
+#screen-game.tut-active {
+  padding-bottom: 220px;
+}
+
+/* ハイライト対象要素 */
+.tutorial-focus {
+  position: relative !important;
+  z-index: 701 !important;
+  outline: 3px solid var(--accent) !important;
+  outline-offset: 5px;
+  border-radius: var(--radius) !important;
+  animation: tutPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes tutPulse {
+  0%, 100% { box-shadow: 0 0 0 6px rgba(232,0,45,.1),  0 0 22px rgba(232,0,45,.18); }
+  50%       { box-shadow: 0 0 0 10px rgba(232,0,45,.16), 0 0 36px rgba(232,0,45,.28); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tutorial-focus { animation: none; box-shadow: 0 0 0 6px rgba(232,0,45,.15); }
+}
+
 /* ─── ルール画面 ─────────────────────────────────────────────────── */
 #screen-rules { gap: 20px; max-width: 600px; margin: 0 auto; background: var(--bg); }
 #screen-rules h2 {

@@ -306,6 +306,7 @@ function onCardClick(index) {
 
 function onBattle() {
   if (engine.selectedCardIndices.length === 0) return;
+  if (tutorialMgr.active) tutorialMgr.end();
   document.getElementById('btn-battle').disabled = true;
 
   const result = engine.battle();
@@ -451,13 +452,25 @@ function showGameOver() {
   });
 }
 
+// ─── チュートリアル用ヘルパー ──────────────────────────────────────────
+function _tutorialSelectCard() {
+  if (!engine || engine.playerHand.length === 0) return;
+  if (engine.selectedCardIndices.length === 0) {
+    engine.toggleCardSelection(0);
+    renderHand();
+    renderPlayerSlot();
+    updateBattleBtn();
+  }
+}
+
 // ─── イベント登録 ────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-start').addEventListener('click', startGame);
   document.getElementById('btn-retry').addEventListener('click', startGame);
   document.getElementById('btn-title').addEventListener('click', () => showScreen('screen-title'));
-  document.getElementById('btn-rules').addEventListener('click', () => showScreen('screen-rules'));
-  document.getElementById('btn-rules-back').addEventListener('click', () => showScreen('screen-title'));
+  document.getElementById('btn-rules').addEventListener('click', () => { startGame(); tutorialMgr.start(); });
+  document.getElementById('btn-tnext').addEventListener('click', () => tutorialMgr.next());
+  document.getElementById('btn-tskip').addEventListener('click', () => tutorialMgr.end());
   document.getElementById('btn-battle').addEventListener('click', onBattle);
   document.getElementById('btn-next').addEventListener('click', onNextRound);
 

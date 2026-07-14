@@ -427,7 +427,8 @@ function showResult(result) {
     bonusEl.className = 'result-bonus';
   }
 
-  document.getElementById('result-total').textContent = `合計 +${result.totalPoints}点`;
+  document.getElementById('result-total').textContent = `今回 +${result.totalPoints}点`;
+  document.getElementById('result-cumulative').textContent = `累計スコア ${engine.score}点`;
 
   // イベント表示
   const evEl = document.getElementById('result-event');

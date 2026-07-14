@@ -244,9 +244,37 @@ function renderHand() {
   mnaHint.style.display = engine.canMnA() ? 'inline' : 'none';
 }
 
+let _scoreAnimId = null;
+function animateScore(from, to) {
+  if (_scoreAnimId) cancelAnimationFrame(_scoreAnimId);
+  const el = document.getElementById('score-val');
+  const duration = 500;
+  const start = performance.now();
+  function tick(now) {
+    const t = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = Math.round(from + (to - from) * eased);
+    if (t < 1) _scoreAnimId = requestAnimationFrame(tick);
+    else { el.textContent = to; _scoreAnimId = null; }
+  }
+  _scoreAnimId = requestAnimationFrame(tick);
+}
+
+let _prevScore = 0;
 function renderHeader() {
   document.getElementById('round-num').textContent = `ROUND ${engine.round} / ${engine.maxRounds}`;
-  document.getElementById('score-val').textContent = engine.score;
+  if (engine.score !== _prevScore) {
+    animateScore(_prevScore, engine.score);
+    _prevScore = engine.score;
+  }
+  const sb = document.getElementById('streak-badge');
+  if (engine.winStreak >= 2) {
+    const fires = '🔥'.repeat(Math.min(engine.winStreak, 5));
+    sb.textContent = `${fires} ${engine.winStreak}連勝中！`;
+    sb.classList.remove('hidden');
+  } else {
+    sb.classList.add('hidden');
+  }
 }
 
 // ─── 対決ボタン状態 ──────────────────────────────────────────────────
@@ -262,6 +290,8 @@ function updateBattleBtn() {
 function startGame() {
   engine = new GameEngine(STOCKS, selectedDifficulty);
   engine.start();
+  _prevScore = 0;
+  document.getElementById('score-val').textContent = '0';
   showScreen('screen-game');
   hideResult();
   startRound();
@@ -282,11 +312,32 @@ function startRound() {
 
 function renderOpponentCard(stock) {
   const slot = document.getElementById('opp-slot');
+  // フリップコンテナを構築
+  const container = document.createElement('div');
+  container.className = 'flip-container';
+  const inner = document.createElement('div');
+  inner.className = 'flip-inner';
+  inner.id = 'opp-flip-inner';
+
+  // 表面：情報カード（目安）
+  const front = document.createElement('div');
+  front.className = 'flip-front';
+  front.appendChild(makeOpponentCardFace(stock));
+
+  // 裏面：対決後に差し替えるプレースホルダー
+  const back = document.createElement('div');
+  back.className = 'flip-back';
+  back.id = 'opp-flip-back';
+
+  inner.appendChild(front);
+  inner.appendChild(back);
+  container.appendChild(inner);
   slot.innerHTML = '';
-  slot.appendChild(makeOpponentCardFace(stock));
+  slot.appendChild(container);
 }
 
 function onCardClick(index) {
+  SFX.cardSelect();
   engine.toggleCardSelection(index);
   renderHand();
   renderPlayerSlot();
@@ -309,21 +360,32 @@ function onBattle() {
   if (tutorialMgr.active) tutorialMgr.end();
   document.getElementById('btn-battle').disabled = true;
 
+  SFX.battle();
+  const vsEl = document.querySelector('.vs-center');
+  vsEl.classList.add('battling');
+  vsEl.addEventListener('animationend', () => vsEl.classList.remove('battling'), { once: true });
+
   const result = engine.battle();
   renderHeader();
 
-  // 相手カードを正式表示（実値＋補正）に切り替え
-  const oppSlot = document.getElementById('opp-slot');
-  oppSlot.innerHTML = '';
+  // 相手カードをフリップして正式表示（実値＋補正）に切り替え
   const revealedCard = makeBattleCard(result.opponentCard, true);
   revealedCard.classList.add('revealed');
-  oppSlot.appendChild(revealedCard);
+  const backEl = document.getElementById('opp-flip-back');
+  if (backEl) backEl.appendChild(revealedCard);
+  const flipInner = document.getElementById('opp-flip-inner');
+  if (flipInner) flipInner.classList.add('flipped');
 
   // 勝敗の枠色
   document.querySelectorAll('#player-slot .battle-card').forEach(el => {
-    el.classList.add(result.playerWins ? 'win-card' : 'lose-card');
+    el.classList.add(result.isDraw ? 'draw-card' : result.playerWins ? 'win-card' : 'lose-card');
   });
-  revealedCard.classList.add(result.playerWins ? 'lose-card' : 'win-card');
+  revealedCard.classList.add(result.isDraw ? 'draw-card' : result.playerWins ? 'lose-card' : 'win-card');
+
+  // フラッシュ演出
+  const flash = document.getElementById('battle-flash');
+  flash.className = result.isDraw ? 'flash-draw' : result.playerWins ? 'flash-win' : 'flash-lose';
+  flash.addEventListener('animationend', () => { flash.className = ''; }, { once: true });
 
   setTimeout(() => showResult(result), 600);
 }
@@ -332,14 +394,29 @@ function onBattle() {
 function showResult(result) {
   document.getElementById('result-overlay').classList.remove('hidden');
 
+  // 効果音
+  if (result.isDraw)       SFX.draw();
+  else if (result.playerWins && result.bonus) SFX.streak();
+  else if (result.playerWins) SFX.win();
+  else                     SFX.lose();
+
+  // コンボオーバーレイ（3連勝以上）
+  if (result.playerWins && engine.winStreak >= 3) {
+    const fires = '🔥'.repeat(Math.min(engine.winStreak, 5));
+    const combo = document.getElementById('combo-overlay');
+    combo.setAttribute('data-text', `${fires}\n${engine.winStreak}連勝！`);
+    combo.className = 'combo-overlay show';
+    combo.addEventListener('animationend', () => { combo.className = 'combo-overlay hidden'; }, { once: true });
+  }
+
   // 勝敗バナー
   const banner = document.getElementById('result-banner');
-  banner.textContent = result.playerWins ? '勝利！' : '敗北…';
-  banner.className = 'result-banner ' + (result.playerWins ? 'win' : 'lose');
+  banner.textContent = result.isDraw ? '引き分け' : result.playerWins ? '勝利！' : '敗北…';
+  banner.className = 'result-banner ' + (result.isDraw ? 'draw' : result.playerWins ? 'win' : 'lose');
 
   // ポイント表示
   document.getElementById('result-base').textContent =
-    result.playerWins ? `基本勝利 +${result.basePoints}点` : '±0点';
+    result.isDraw ? `引き分け +${result.basePoints}点` : result.playerWins ? `基本勝利 +${result.basePoints}点` : '±0点';
 
   const bonusEl = document.getElementById('result-bonus');
   if (result.bonus) {
@@ -424,19 +501,31 @@ function showGameOver() {
   document.getElementById('rank-label').textContent = rank.label;
   document.getElementById('rank-stars').textContent =
     '★'.repeat(rank.stars) + '☆'.repeat(5 - rank.stars);
+  const gapEl = document.getElementById('rank-gap');
+  gapEl.textContent = rank.gap > 0 ? `次のランクまであと ${rank.gap}点` : '最高ランク達成！🎉';
+
+  const HS_KEY = 'mcb_highscore';
+  const prev = parseInt(localStorage.getItem(HS_KEY) || '0', 10);
+  const isNew = engine.score > prev;
+  if (isNew) localStorage.setItem(HS_KEY, engine.score);
+  const bsEl = document.getElementById('best-score');
+  bsEl.textContent = isNew ? '🏆 NEW BEST!' : `BEST: ${Math.max(prev, engine.score)}点`;
+
+  if (rank.stars === 5) setTimeout(() => SFX.perfectScore(), 300);
+  else if (isNew)       setTimeout(() => SFX.win(), 300);
 
   const histEl = document.getElementById('history-list');
   histEl.innerHTML = '';
   engine.history.forEach(r => {
     const li = document.createElement('div');
-    li.className = 'history-item ' + (r.playerWins ? 'h-win' : 'h-lose');
+    li.className = 'history-item ' + (r.isDraw ? 'h-draw' : r.playerWins ? 'h-win' : 'h-lose');
     const playerName = r.isMnA
       ? `${r.playerCards[0].name}＋${r.playerCards[1].name}`
       : r.playerCards[0].name;
     const bonusTxt = r.bonus ? ` 🔥${r.bonus.label}ボーナス` : '';
     li.innerHTML = `
       <span class="h-round">R${r.round}</span>
-      <span class="h-result">${r.playerWins ? '勝' : '負'}</span>
+      <span class="h-result">${r.isDraw ? '分' : r.playerWins ? '勝' : '負'}</span>
       <span class="h-detail">${playerName} vs ${r.opponentCard.name}</span>
       <span class="h-pts">+${r.totalPoints}点${bonusTxt}</span>
     `;
@@ -457,6 +546,13 @@ function _tutorialSelectCard() {
 
 // ─── イベント登録 ────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('btn-share').addEventListener('click', () => {
+    const rank = engine ? engine.getScoreRank() : null;
+    if (!rank) return;
+    const stars = '★'.repeat(rank.stars) + '☆'.repeat(5 - rank.stars);
+    const text = `【時価総額バトル】\n${stars} ${rank.label}\nスコア: ${engine.score}点\n#時価総額バトル #日経225\nhttps://2022311057.github.io/market-cap-battle/`;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
+  });
   document.getElementById('btn-start').addEventListener('click', startGame);
   document.getElementById('btn-retry').addEventListener('click', startGame);
   document.getElementById('btn-title').addEventListener('click', () => showScreen('screen-title'));

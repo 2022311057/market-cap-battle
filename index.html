@@ -36,6 +36,7 @@
     <!-- ヘッダー -->
     <header class="game-header">
       <div class="round-indicator" id="round-num">ROUND 1 / 5</div>
+      <div id="streak-badge" class="streak-badge hidden"></div>
       <div class="score-display">
         <span class="label">SCORE</span>
         <span class="value" id="score-val">0</span>
@@ -102,7 +103,6 @@
         <div class="result-pts">
           <div id="result-base" class="result-base">+0点</div>
           <div id="result-bonus" class="result-bonus"></div>
-          <div id="result-justkill" class="result-justkill"></div>
           <div id="result-total" class="result-total">合計 +0点</div>
           <div id="result-event" class="result-event"></div>
         </div>
@@ -150,6 +150,8 @@
         <div class="final-score-label">FINAL SCORE</div>
         <div class="rank-label" id="rank-label">-</div>
         <div class="rank-stars" id="rank-stars">☆☆☆☆☆</div>
+        <div class="rank-gap" id="rank-gap"></div>
+        <div class="best-score" id="best-score"></div>
       </div>
 
       <div class="history-list" id="history-list"></div>
@@ -158,12 +160,16 @@
         <button id="btn-retry" class="btn-primary">もう一度プレイ</button>
         <button id="btn-title" class="btn-secondary">タイトルへ</button>
       </div>
+      <button id="btn-share" class="btn-share">𝕏 結果をシェア</button>
     </div>
   </div>
 
 </div><!-- /app -->
 
 <!-- ─── チュートリアルオーバーレイ ────────────────────────────── -->
+<div id="battle-flash"></div>
+<div id="combo-overlay" class="combo-overlay hidden"></div>
+
 <div id="tutorial-overlay" class="hidden">
   <div id="tutorial-panel">
     <div class="tut-meta">
@@ -177,6 +183,7 @@
 </div>
 
 <script src="js/data.js"></script>
+<script src="js/sound.js"></script>
 <script src="js/game.js"></script>
 <script src="js/tutorial.js"></script>
 <script src="js/main.js"></script>

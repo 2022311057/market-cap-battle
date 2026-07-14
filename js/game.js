@@ -114,6 +114,7 @@ class GameEngine {
 
     const opponentEffValue = this.getEffectiveValue(this.opponentCard, metric, event);
 
+    const isDraw = playerEffValue === opponentEffValue;
     const playerWins = playerEffValue > opponentEffValue;
     const margin = opponentEffValue > 0
       ? Math.abs(playerEffValue - opponentEffValue) / opponentEffValue
@@ -128,6 +129,8 @@ class GameEngine {
       this.winStreak++;
       const extra = STREAK_BONUS[this.winStreak];
       if (extra) bonus = { label: `${this.winStreak}連勝`, extra };
+    } else if (isDraw) {
+      basePoints = 50; // 引き分けは50点、連勝継続
     } else {
       this.winStreak = 0;
     }
@@ -142,6 +145,7 @@ class GameEngine {
       playerCard: playerCards[0],   // 後方互換
       opponentCard: this.opponentCard,
       playerWins,
+      isDraw,
       margin,
       basePoints,
       bonus,
@@ -170,12 +174,15 @@ class GameEngine {
   }
 
   getScoreRank() {
-    // 最大700点（全5勝＋連勝ボーナス合計200点）。660点は全勝必須ライン。
-    if (this.score >= 660) return { label: '株の神様',      stars: 5 };
-    if (this.score >= 450) return { label: '敏腕トレーダー', stars: 4 };
-    if (this.score >= 280) return { label: '投資家見習い',   stars: 3 };
-    if (this.score >= 100) return { label: '株式初心者',     stars: 2 };
-    return                        { label: 'もっと勉強が必要', stars: 1 };
+    const RANKS = [
+      { threshold: 660, label: '株の神様',      stars: 5, next: null },
+      { threshold: 450, label: '敏腕トレーダー', stars: 4, next: 660 },
+      { threshold: 280, label: '投資家見習い',   stars: 3, next: 450 },
+      { threshold: 100, label: '株式初心者',     stars: 2, next: 280 },
+      { threshold: 0,   label: 'もっと勉強が必要', stars: 1, next: 100 },
+    ];
+    const rank = RANKS.find(r => this.score >= r.threshold);
+    return { ...rank, gap: rank.next != null ? rank.next - this.score : 0 };
   }
 }
 

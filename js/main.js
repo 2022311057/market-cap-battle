@@ -427,10 +427,6 @@ function showResult(result) {
     bonusEl.className = 'result-bonus';
   }
 
-  const mnaEl = document.getElementById('result-justkill');
-  mnaEl.textContent = '';
-  mnaEl.className = 'result-justkill';
-
   document.getElementById('result-total').textContent = `合計 +${result.totalPoints}点`;
 
   // イベント表示

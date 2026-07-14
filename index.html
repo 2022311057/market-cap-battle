@@ -26,7 +26,28 @@
 
     <div class="title-buttons">
       <button id="btn-start" class="btn-primary">ゲーム開始</button>
+      <button id="btn-daily" class="btn-daily">📅 今日の挑戦</button>
       <button id="btn-rules" class="btn-secondary">ルール説明</button>
+    </div>
+    <div id="daily-status" class="daily-status"></div>
+  </div>
+
+  <!-- ─── ドラフト画面 ──────────────────────────────────────────────── -->
+  <div id="screen-draft" class="screen">
+    <div class="draft-inner">
+      <div class="draft-header">
+        <div class="draft-eyebrow" id="draft-mode-label">手札ドラフト</div>
+        <h2 class="draft-title">7枚を選んでゲーム開始</h2>
+        <p class="draft-desc">12枚の候補から7枚を選んでください。残り5枚は捨て牌になります。</p>
+        <div class="draft-progress">
+          <span id="draft-selected-count">0</span> / 7 枚選択中
+        </div>
+      </div>
+      <div class="draft-cards" id="draft-cards"></div>
+      <div class="draft-btns">
+        <button id="btn-draft-random" class="btn-secondary">ランダムで7枚選ぶ</button>
+        <button id="btn-draft-confirm" class="btn-primary" disabled>この7枚で開始！</button>
+      </div>
     </div>
   </div>
 
@@ -35,13 +56,23 @@
 
     <!-- ヘッダー -->
     <header class="game-header">
-      <div class="round-indicator" id="round-num">ROUND 1 / 5</div>
+      <div class="header-left">
+        <div class="round-indicator" id="round-num">ROUND 1 / 5</div>
+        <div class="round-name" id="round-name"></div>
+      </div>
       <div id="streak-badge" class="streak-badge hidden"></div>
       <div class="score-display">
         <span class="label">SCORE</span>
         <span class="value" id="score-val">0</span>
       </div>
     </header>
+
+    <!-- ライバルバー -->
+    <div id="rival-bar" class="rival-bar hidden">
+      <span class="rival-vs">VS</span>
+      <span id="rival-name-display" class="rival-name-display"></span>
+      <span id="rival-quote-display" class="rival-quote-display"></span>
+    </div>
 
     <!-- イベントバナー -->
     <div id="event-banner" class="event-banner hidden">
@@ -99,14 +130,20 @@
     <div id="result-overlay" class="hidden">
       <div class="result-inner">
         <div id="result-banner" class="result-banner">-</div>
+        <div id="result-subtext" class="result-subtext"></div>
+
+        <div id="result-close-match" class="result-close-match hidden"></div>
 
         <div class="result-pts">
           <div id="result-base" class="result-base">+0点</div>
           <div id="result-bonus" class="result-bonus"></div>
+          <div id="result-ability-bonus" class="result-ability-bonus hidden"></div>
           <div id="result-total" class="result-total">今回 +0点</div>
           <div id="result-cumulative" class="result-cumulative">累計スコア 0点</div>
           <div id="result-event" class="result-event"></div>
         </div>
+
+        <div id="result-hint" class="result-hint hidden"></div>
 
         <!-- 企業情報パネル -->
         <div class="edu-panel">
@@ -144,7 +181,7 @@
   <!-- ─── ゲームオーバー画面 ───────────────────────────────────── -->
   <div id="screen-gameover" class="screen">
     <div class="gameover-inner">
-      <h2 class="gameover-title">ゲーム終了！</h2>
+      <h2 class="gameover-title" id="gameover-title">ゲーム終了！</h2>
 
       <div class="final-score-box">
         <div class="final-score-num" id="final-score">0</div>
@@ -155,7 +192,13 @@
         <div class="best-score" id="best-score"></div>
       </div>
 
+      <div id="gameover-rival" class="gameover-rival hidden"></div>
+
+      <div id="gameover-stats" class="gameover-stats"></div>
+
       <div class="history-list" id="history-list"></div>
+
+      <div id="gameover-collection" class="gameover-collection"></div>
 
       <div class="gameover-btns">
         <button id="btn-retry" class="btn-primary">もう一度プレイ</button>
@@ -170,6 +213,20 @@
 <!-- ─── チュートリアルオーバーレイ ────────────────────────────── -->
 <div id="battle-flash"></div>
 <div id="combo-overlay" class="combo-overlay hidden"></div>
+
+<!-- 最終ラウンドトースト -->
+<div id="final-round-toast" class="final-round-toast hidden"></div>
+
+<!-- デイリー済みオーバーレイ -->
+<div id="daily-played-overlay" class="daily-played-overlay hidden">
+  <div class="dp-inner">
+    <div class="dp-icon">📅</div>
+    <div class="dp-title">今日はもうプレイ済みです！</div>
+    <div class="dp-score" id="dp-score-text"></div>
+    <div class="dp-desc">また明日チャレンジしよう！</div>
+    <button id="btn-dp-close" class="btn-primary">閉じる</button>
+  </div>
+</div>
 
 <div id="tutorial-overlay" class="hidden">
   <div id="tutorial-panel">

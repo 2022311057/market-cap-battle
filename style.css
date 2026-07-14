@@ -1244,3 +1244,458 @@ body {
   .result-pts { padding: 12px 20px; }
   .final-score-box { padding: 18px 28px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   新機能スタイル（Phase 2 追加分）
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ─── タイトル画面：デイリーボタン ──────────────────────────────────── */
+.btn-daily {
+  padding: 11px 26px;
+  font-size: .88rem;
+  font-weight: 800;
+  border-radius: 999px;
+  border: 2px solid rgba(96,165,250,.6);
+  background: rgba(96,165,250,.12);
+  color: rgba(255,255,255,.92);
+  cursor: pointer;
+  transition: all .15s cubic-bezier(.34,1.56,.64,1);
+  letter-spacing: .04em;
+  backdrop-filter: blur(6px);
+}
+.btn-daily:hover { background: rgba(96,165,250,.25); border-color: #60a5fa; transform: translateY(-1px) scale(1.03); }
+.btn-daily.daily-done { opacity: .6; border-color: rgba(255,255,255,.3); }
+
+.daily-status {
+  font-size: .72rem;
+  color: rgba(255,255,255,.6);
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  letter-spacing: .04em;
+  margin-top: -8px;
+}
+
+/* ─── ドラフト画面 ───────────────────────────────────────────────────── */
+#screen-draft {
+  background: var(--bg);
+  gap: 0;
+  padding: 0;
+  align-items: stretch;
+  overflow-y: auto;
+}
+
+.draft-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 24px 16px 36px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.draft-eyebrow {
+  font-family: 'Courier New', monospace;
+  font-size: .68rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.draft-title {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--text);
+  text-align: center;
+  margin: 0;
+}
+
+.draft-desc {
+  font-size: .8rem;
+  color: var(--text2);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.draft-progress {
+  font-size: 1.1rem;
+  font-weight: 900;
+  font-family: 'Courier New', monospace;
+  color: var(--accent);
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  border-radius: 999px;
+  padding: 4px 20px;
+  letter-spacing: .06em;
+}
+
+.draft-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .draft-cards { grid-template-columns: repeat(3, 1fr); gap: 7px; }
+}
+
+.draft-card {
+  position: relative;
+  border-radius: 6px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+  transition: transform .12s, border-color .12s, box-shadow .12s;
+  overflow: hidden;
+}
+.draft-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--sector-color, var(--accent));
+}
+.draft-card:hover { transform: translateY(-3px); border-color: var(--text2); }
+.draft-card.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent);
+  background: #fff8f8;
+}
+
+.dc-check {
+  position: absolute;
+  top: 6px; right: 7px;
+  font-size: .85rem;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1;
+}
+.dc-sector { font-size: .62rem; font-weight: 700; }
+.dc-name   { font-size: .78rem; font-weight: 800; color: var(--text); line-height: 1.3; flex: 1; }
+.dc-value  { font-size: .9rem; font-weight: 900; color: var(--gold); font-family: 'Courier New', monospace; }
+.dc-ability {
+  font-size: .58rem;
+  font-weight: 700;
+  color: var(--blue, #60a5fa);
+  background: rgba(96,165,250,.1);
+  border-radius: 2px;
+  padding: 1px 4px;
+  border: 1px solid rgba(96,165,250,.3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dc-ticker { font-size: .6rem; color: var(--text3, #4A5568); font-family: 'Courier New', monospace; }
+
+.draft-btns {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ─── ゲームヘッダー拡張 ─────────────────────────────────────────────── */
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.round-name {
+  font-size: .65rem;
+  font-weight: 700;
+  color: rgba(255,255,255,.5);
+  font-family: 'Courier New', monospace;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+/* ─── ライバルバー ───────────────────────────────────────────────────── */
+.rival-bar {
+  background: linear-gradient(90deg, #1a1a2e 0%, #16213e 100%);
+  border-bottom: 1px solid #2d3348;
+  padding: 5px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: .72rem;
+  flex-shrink: 0;
+}
+.rival-bar.hidden { display: none; }
+
+.rival-vs {
+  font-family: 'Courier New', monospace;
+  font-weight: 900;
+  font-size: .65rem;
+  color: var(--accent);
+  letter-spacing: .1em;
+  flex-shrink: 0;
+}
+.rival-name-display {
+  font-weight: 800;
+  color: #e2e8f0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.rival-quote-display {
+  color: #64748b;
+  font-style: italic;
+  font-size: .68rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width: 480px) { .rival-quote-display { display: none; } }
+
+/* ─── 結果画面：新要素 ───────────────────────────────────────────────── */
+.result-subtext {
+  font-size: .9rem;
+  color: var(--text2);
+  font-weight: 600;
+  text-align: center;
+  margin-top: -6px;
+  animation: fadeIn .3s .1s both ease;
+}
+
+.result-close-match {
+  font-size: .88rem;
+  font-weight: 800;
+  padding: 6px 16px;
+  border-radius: 999px;
+  text-align: center;
+  animation: popIn .35s cubic-bezier(.34,1.56,.64,1);
+}
+.result-close-match.hidden { display: none; }
+.result-close-match.close-win  { background: #ECFDF5; color: var(--win); border: 1.5px solid var(--win); }
+.result-close-match.close-lose { background: #FEF2F2; color: var(--lose); border: 1.5px solid var(--lose); }
+
+.result-ability-bonus {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #60a5fa;
+  display: none;
+}
+.result-ability-bonus.show {
+  display: block;
+  animation: popIn .3s .15s both cubic-bezier(.34,1.56,.64,1);
+}
+.result-ability-bonus.hidden { display: none; }
+
+.result-hint {
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--text2);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid #60a5fa;
+  border-radius: 4px;
+  padding: 8px 14px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  display: none;
+}
+.result-hint.show {
+  display: block;
+  animation: fadeIn .35s .2s both ease;
+}
+.result-hint.hidden { display: none; }
+
+/* ─── 業種能力バッジ（バトルカード・手札） ──────────────────────────── */
+.bc-ability-tag {
+  font-size: .58rem;
+  font-weight: 700;
+  color: #60a5fa;
+  background: rgba(96,165,250,.1);
+  border: 1px solid rgba(96,165,250,.3);
+  border-radius: 2px;
+  padding: 1px 5px;
+  align-self: flex-start;
+  letter-spacing: .02em;
+}
+
+.hc-ability {
+  font-size: .55rem;
+  font-weight: 700;
+  color: #60a5fa;
+  background: rgba(96,165,250,.08);
+  border: 1px solid rgba(96,165,250,.25);
+  border-radius: 2px;
+  padding: 1px 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: auto;
+}
+
+/* ─── 最終ラウンドトースト ───────────────────────────────────────────── */
+.final-round-toast {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  color: #e2e8f0;
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  padding: 8px 20px;
+  font-size: .8rem;
+  font-weight: 700;
+  z-index: 900;
+  text-align: center;
+  white-space: nowrap;
+  animation: slideDownToast .4s cubic-bezier(.34,1.56,.64,1);
+  box-shadow: 0 4px 20px rgba(198,146,20,.3);
+  max-width: 90vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.final-round-toast.hidden { display: none; }
+@keyframes slideDownToast {
+  from { transform: translateX(-50%) translateY(-60px); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+/* ─── スコア大量獲得エフェクト ──────────────────────────────────────── */
+@keyframes scoreBigGain {
+  0%   { transform: scale(1); color: #FFFFFF; }
+  40%  { transform: scale(1.35); color: var(--gold); }
+  100% { transform: scale(1); color: #FFFFFF; }
+}
+.score-big-gain { animation: scoreBigGain .5s ease-out; }
+
+/* ─── デイリー済みオーバーレイ ──────────────────────────────────────── */
+.daily-played-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+.daily-played-overlay.hidden { display: none; }
+
+.dp-inner {
+  background: var(--surface, #fff);
+  border-radius: 16px;
+  padding: 36px 32px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: 320px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+}
+.dp-icon  { font-size: 2.5rem; }
+.dp-title { font-size: 1.1rem; font-weight: 900; color: var(--text); }
+.dp-score { font-size: 1.8rem; font-weight: 900; color: var(--accent); font-family: 'Courier New', monospace; }
+.dp-desc  { font-size: .82rem; color: var(--text2); }
+
+/* ─── ゲームオーバー：ライバル結果 ──────────────────────────────────── */
+.gameover-rival {
+  width: 100%;
+  background: linear-gradient(135deg, #1e293b, #1a1f2e);
+  border: 1px solid #2d3348;
+  border-radius: 8px;
+  padding: 14px 18px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.gameover-rival.hidden { display: none; }
+
+.rival-result-name {
+  font-size: .72rem;
+  color: #64748b;
+  font-family: 'Courier New', monospace;
+  letter-spacing: .06em;
+}
+.rival-result-comment {
+  font-size: .9rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  font-style: italic;
+}
+.rival-result-score {
+  font-size: .72rem;
+  color: #475569;
+  font-family: 'Courier New', monospace;
+}
+
+/* ─── ゲームオーバー：通算成績 ──────────────────────────────────────── */
+.gameover-stats {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 16px;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.stats-item {
+  font-size: .78rem;
+  color: var(--text2);
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ─── ゲームオーバー：コレクション ─────────────────────────────────── */
+.gameover-collection {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 16px;
+  text-align: center;
+}
+
+.coll-label {
+  font-size: .65rem;
+  color: var(--text2);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  margin-bottom: 4px;
+}
+.coll-count {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--text);
+  font-family: 'Courier New', monospace;
+  line-height: 1.2;
+}
+.coll-total { font-size: .75rem; font-weight: 600; color: var(--text2); }
+
+.coll-bar {
+  height: 6px;
+  background: var(--surface2);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.coll-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+  border-radius: 3px;
+  transition: width .6s ease;
+  min-width: 2px;
+}
